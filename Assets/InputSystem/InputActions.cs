@@ -62,6 +62,15 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Respawn"",
+                    ""type"": ""Button"",
+                    ""id"": ""4f5b9e51-a574-4e60-ac9b-7492e8bc2ef2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -130,6 +139,17 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Steer Right"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2aa28623-7baa-41c3-a8bc-fccd886efffe"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Respawn"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -142,6 +162,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_Player_Brake = m_Player.FindAction("Brake", throwIfNotFound: true);
         m_Player_Steer = m_Player.FindAction("Steer", throwIfNotFound: true);
         m_Player_SteerRight = m_Player.FindAction("Steer Right", throwIfNotFound: true);
+        m_Player_Respawn = m_Player.FindAction("Respawn", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -207,6 +228,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Brake;
     private readonly InputAction m_Player_Steer;
     private readonly InputAction m_Player_SteerRight;
+    private readonly InputAction m_Player_Respawn;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
@@ -215,6 +237,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         public InputAction @Brake => m_Wrapper.m_Player_Brake;
         public InputAction @Steer => m_Wrapper.m_Player_Steer;
         public InputAction @SteerRight => m_Wrapper.m_Player_SteerRight;
+        public InputAction @Respawn => m_Wrapper.m_Player_Respawn;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -236,6 +259,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @SteerRight.started += instance.OnSteerRight;
             @SteerRight.performed += instance.OnSteerRight;
             @SteerRight.canceled += instance.OnSteerRight;
+            @Respawn.started += instance.OnRespawn;
+            @Respawn.performed += instance.OnRespawn;
+            @Respawn.canceled += instance.OnRespawn;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -252,6 +278,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @SteerRight.started -= instance.OnSteerRight;
             @SteerRight.performed -= instance.OnSteerRight;
             @SteerRight.canceled -= instance.OnSteerRight;
+            @Respawn.started -= instance.OnRespawn;
+            @Respawn.performed -= instance.OnRespawn;
+            @Respawn.canceled -= instance.OnRespawn;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -275,5 +304,6 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         void OnBrake(InputAction.CallbackContext context);
         void OnSteer(InputAction.CallbackContext context);
         void OnSteerRight(InputAction.CallbackContext context);
+        void OnRespawn(InputAction.CallbackContext context);
     }
 }

@@ -5,21 +5,29 @@ using UnityEngine.InputSystem;
 
 public class CarController : MonoBehaviour
 {
-    public float motorTorque = 10.0f;
-    public float brakeTorque = 300.0f;
-    public float maxSteerAngle = 30.0f;
-    public float maxSpeed = 10.0f;
-    public Vector3 _centerOfMass;
-    public List<Wheel> wheels;
+    [SerializeField]
+    private float motorTorque = 10.0f;
+    [SerializeField]
+    private float brakeTorque = 300.0f;
+    [SerializeField]
+    private float maxSteerAngle = 30.0f;
+    [SerializeField]
+    private float maxSpeed = 10.0f;
+    [SerializeField]
+    private Vector3 _centerOfMass;
+    [SerializeField]
+    private List<Wheel> wheels;
+    [SerializeField]
+    private Transform startPosition;
 
-    public enum Axel
+    private enum Axel
     {
         Front,
         Rear
     }
 
     [Serializable]
-    public struct Wheel
+    private struct Wheel
     {
         public GameObject wheelModel;
         public WheelCollider wheelCollider;
@@ -32,11 +40,13 @@ public class CarController : MonoBehaviour
     private InputAction brakeAction;
     private InputAction moveAction;
     private InputAction steerAction;
+    private InputAction respawnAction;
     private PlayerInput playerInput;
     private bool isBraking = false;
     private double speed = 0;
     private float moveInput; // Range from -1 to 1, -1 -> backward, 1 -> forward
     private float steerInput; // Range from -1 to 1, -1 -> left, 1 -> right
+    private bool respawned = false;
 
     private void Awake()
     {
@@ -46,13 +56,7 @@ public class CarController : MonoBehaviour
     private void Start()
     {
         HandleInputs();
-
-        Debug.Log("0: " + EaseInSine(0));
-        Debug.Log("0.1: " + EaseInSine(0.1));
-        Debug.Log("0.2: " + EaseInSine(0.2));
-        Debug.Log("0.5: " + EaseInSine(0.5));
-        Debug.Log("0.8: " + EaseInSine(0.8));
-        Debug.Log("0.9: " + EaseInSine(0.9));
+        SetPositionToStartPosition();
     }
 
     private void FixedUpdate()
@@ -74,6 +78,7 @@ public class CarController : MonoBehaviour
         brakeAction = playerInput.actions["Brake"];
         moveAction = playerInput.actions["Move"];
         steerAction = playerInput.actions["Steer"];
+        respawnAction = playerInput.actions["Respawn"];
 
         carRigidbody = GetComponent<Rigidbody>();
         carRigidbody.centerOfMass = _centerOfMass;
@@ -87,21 +92,49 @@ public class CarController : MonoBehaviour
         moveAction.canceled += context => moveInput = 0;
         steerAction.performed += context => steerInput = context.ReadValue<float>();
         steerAction.canceled += context => steerInput = 0;
+        respawnAction.performed += context => Respawn();
     }
 
     private void Move()
     {
-        float currentBrakeTorgue = 0;
+        float frontAxelBrakeTorque = 0;
+        float rearAxelBrakeTorque = 0;
 
-        if (isBraking || (IsMovingForward() && moveInput < 0) || (IsMovingBackward() && moveInput > 0))
+        if (respawned)
         {
-            currentBrakeTorgue = brakeTorque;
+            frontAxelBrakeTorque = float.MaxValue;
+            rearAxelBrakeTorque = float.MaxValue;
+            carRigidbody.isKinematic = true;
+            respawned = false;
+        } else
+        {
+            carRigidbody.isKinematic = false;
+
+            if ((IsMovingForward() && moveInput < 0) || (IsMovingBackward() && moveInput > 0))
+            {
+                frontAxelBrakeTorque = brakeTorque;
+                rearAxelBrakeTorque = brakeTorque;
+            }
+
+            if (isBraking)
+            {
+                rearAxelBrakeTorque = brakeTorque;
+            }
         }
 
         foreach (var wheel in wheels)
         {
             wheel.wheelCollider.motorTorque = speed <= maxSpeed ? moveInput * motorTorque : 0;
-            wheel.wheelCollider.brakeTorque = currentBrakeTorgue;
+
+            if (wheel.axel == Axel.Front)
+            {
+                wheel.wheelCollider.brakeTorque = frontAxelBrakeTorque;
+            }
+
+            if (wheel.axel == Axel.Rear)
+            {
+                wheel.wheelCollider.brakeTorque = rearAxelBrakeTorque;
+            }
         }
     }
 
@@ -170,5 +203,25 @@ public class CarController : MonoBehaviour
     public bool IsStandingStill()
     {
         return GetMovementDirection() == 0;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "PlaneOfDoom")
+        {
+            Respawn();
+        }
+    }
+
+    public void Respawn()
+    {
+        respawned = true;
+        SetPositionToStartPosition();
+    }
+
+    private void SetPositionToStartPosition()
+    {
+        transform.position = startPosition.position;
+        transform.rotation = startPosition.rotation;
     }
 }
