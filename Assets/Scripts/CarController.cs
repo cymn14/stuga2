@@ -2,23 +2,37 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
+using System.Collections;
 
 public class CarController : MonoBehaviour
 {
     [SerializeField]
     private float motorTorque = 10.0f;
+
     [SerializeField]
     private float brakeTorque = 300.0f;
+
     [SerializeField]
     private float maxSteerAngle = 30.0f;
+
     [SerializeField]
     private float maxSpeed = 10.0f;
+
+    [SerializeField]
+    private float idleBrakeTorque = 100f;
+
     [SerializeField]
     private Vector3 _centerOfMass;
+
     [SerializeField]
     private List<Wheel> wheels;
+
     [SerializeField]
     private Transform startPosition;
+
+    [SerializeField]
+    private TMP_Text devText;
 
     private enum Axel
     {
@@ -41,12 +55,24 @@ public class CarController : MonoBehaviour
     private InputAction moveAction;
     private InputAction steerAction;
     private InputAction respawnAction;
+    private InputAction driftOnOffAction;
     private PlayerInput playerInput;
     private bool isBraking = false;
     private double speed = 0;
     private float moveInput; // Range from -1 to 1, -1 -> backward, 1 -> forward
     private float steerInput; // Range from -1 to 1, -1 -> left, 1 -> right
     private bool respawned = false;
+    private bool driftingEnabled = true;
+
+    private float rearWheelExtremumSlipNonDrift = 1.5f;
+    private float rearWheelExtremumValueNonDrift = 1.5f;
+
+    private float rearWheelExtremumSlipDrift = 1.5f;
+    private float rearWheelExtremumValueDrift = 0.6f;
+
+    private float rearWheelAsymptoteSlip = 0.5f;
+    private float rearWheelAsymptoteValue = 0.75f;
+    private float rearWheelStiffness = 2.4f;
 
     private void Awake()
     {
@@ -79,6 +105,7 @@ public class CarController : MonoBehaviour
         moveAction = playerInput.actions["Move"];
         steerAction = playerInput.actions["Steer"];
         respawnAction = playerInput.actions["Respawn"];
+        driftOnOffAction = playerInput.actions["DriftOnOff"];
 
         carRigidbody = GetComponent<Rigidbody>();
         carRigidbody.centerOfMass = _centerOfMass;
@@ -93,6 +120,7 @@ public class CarController : MonoBehaviour
         steerAction.performed += context => steerInput = context.ReadValue<float>();
         steerAction.canceled += context => steerInput = 0;
         respawnAction.performed += context => Respawn();
+        driftOnOffAction.performed += context => ToggleDriftMode();
     }
 
     private void Move()
@@ -106,14 +134,23 @@ public class CarController : MonoBehaviour
             rearAxelBrakeTorque = float.MaxValue;
             carRigidbody.isKinematic = true;
             respawned = false;
-        } else
+        }
+        else
         {
             carRigidbody.isKinematic = false;
 
             if ((IsMovingForward() && moveInput < 0) || (IsMovingBackward() && moveInput > 0))
             {
+                //Debug.Log("eins");
                 frontAxelBrakeTorque = brakeTorque;
                 rearAxelBrakeTorque = brakeTorque;
+            }
+            else if (moveInput == 0)
+            {
+                //Debug.Log("zwei");
+
+                frontAxelBrakeTorque = idleBrakeTorque;
+                rearAxelBrakeTorque = idleBrakeTorque;
             }
 
             if (isBraking)
@@ -121,6 +158,7 @@ public class CarController : MonoBehaviour
                 rearAxelBrakeTorque = brakeTorque;
             }
         }
+
 
         foreach (var wheel in wheels)
         {
@@ -135,6 +173,8 @@ public class CarController : MonoBehaviour
             {
                 wheel.wheelCollider.brakeTorque = rearAxelBrakeTorque;
             }
+
+            Debug.Log(wheel.wheelCollider.brakeTorque);
         }
     }
 
@@ -205,18 +245,52 @@ public class CarController : MonoBehaviour
         return GetMovementDirection() == 0;
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider collider)
     {
-        if (other.tag == "PlaneOfDoom")
+        if (collider.tag == "PlaneOfDoom")
         {
             Respawn();
         }
+
     }
 
     public void Respawn()
     {
         respawned = true;
         SetPositionToStartPosition();
+    }
+
+    public void ToggleDriftMode()
+    {
+        driftingEnabled = !driftingEnabled;
+
+        Debug.Log(driftingEnabled);
+
+        foreach (var wheel in wheels)
+        {
+            if (wheel.axel == Axel.Rear)
+            {
+                WheelFrictionCurve wheelFrictionCurve = new WheelFrictionCurve();
+
+                if (driftingEnabled)
+                {
+                    wheelFrictionCurve.extremumSlip = rearWheelExtremumSlipDrift;
+                    wheelFrictionCurve.extremumValue = rearWheelExtremumValueDrift;
+
+                }
+                else
+                {
+                    wheelFrictionCurve.extremumSlip = rearWheelExtremumSlipNonDrift;
+                    wheelFrictionCurve.extremumValue = rearWheelExtremumValueNonDrift;
+                }
+
+                wheelFrictionCurve.asymptoteSlip = rearWheelAsymptoteSlip;
+                wheelFrictionCurve.asymptoteValue = rearWheelAsymptoteValue;
+                wheelFrictionCurve.stiffness = rearWheelStiffness;
+
+                wheel.wheelCollider.sidewaysFriction = wheelFrictionCurve;
+            }
+        }
     }
 
     private void SetPositionToStartPosition()
