@@ -80,6 +80,15 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LookAround"",
+                    ""type"": ""Value"",
+                    ""id"": ""96e00e7e-8b27-40b5-9b52-8b83ffff85bd"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -170,6 +179,39 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""action"": ""DriftOnOff"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Two Modifiers"",
+                    ""id"": ""cb918c87-318a-4470-802a-1000a1237054"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LookAround"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Modifier 1"",
+                    ""id"": ""594bc426-ea8f-4060-8b75-29fa1f5afb25"",
+                    ""path"": ""<Gamepad>/rightStick/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LookAround"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Modifier 2"",
+                    ""id"": ""fa3560d7-691a-478b-903a-915ed0436d0f"",
+                    ""path"": ""<Gamepad>/rightStick/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LookAround"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -184,6 +226,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_Player_SteerRight = m_Player.FindAction("Steer Right", throwIfNotFound: true);
         m_Player_Respawn = m_Player.FindAction("Respawn", throwIfNotFound: true);
         m_Player_DriftOnOff = m_Player.FindAction("DriftOnOff", throwIfNotFound: true);
+        m_Player_LookAround = m_Player.FindAction("LookAround", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -251,6 +294,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SteerRight;
     private readonly InputAction m_Player_Respawn;
     private readonly InputAction m_Player_DriftOnOff;
+    private readonly InputAction m_Player_LookAround;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
@@ -261,6 +305,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         public InputAction @SteerRight => m_Wrapper.m_Player_SteerRight;
         public InputAction @Respawn => m_Wrapper.m_Player_Respawn;
         public InputAction @DriftOnOff => m_Wrapper.m_Player_DriftOnOff;
+        public InputAction @LookAround => m_Wrapper.m_Player_LookAround;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -288,6 +333,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @DriftOnOff.started += instance.OnDriftOnOff;
             @DriftOnOff.performed += instance.OnDriftOnOff;
             @DriftOnOff.canceled += instance.OnDriftOnOff;
+            @LookAround.started += instance.OnLookAround;
+            @LookAround.performed += instance.OnLookAround;
+            @LookAround.canceled += instance.OnLookAround;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -310,6 +358,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @DriftOnOff.started -= instance.OnDriftOnOff;
             @DriftOnOff.performed -= instance.OnDriftOnOff;
             @DriftOnOff.canceled -= instance.OnDriftOnOff;
+            @LookAround.started -= instance.OnLookAround;
+            @LookAround.performed -= instance.OnLookAround;
+            @LookAround.canceled -= instance.OnLookAround;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -335,5 +386,6 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         void OnSteerRight(InputAction.CallbackContext context);
         void OnRespawn(InputAction.CallbackContext context);
         void OnDriftOnOff(InputAction.CallbackContext context);
+        void OnLookAround(InputAction.CallbackContext context);
     }
 }

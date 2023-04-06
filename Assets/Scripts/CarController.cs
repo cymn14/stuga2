@@ -29,9 +29,6 @@ public class CarController : MonoBehaviour
     private List<Wheel> wheels;
 
     [SerializeField]
-    private Transform startPosition;
-
-    [SerializeField]
     private TMP_Text devText;
 
     private enum Axel
@@ -57,6 +54,8 @@ public class CarController : MonoBehaviour
     private InputAction respawnAction;
     private InputAction driftOnOffAction;
     private PlayerInput playerInput;
+    private Vector3 startPosition;
+    private Quaternion startRotation;
     private bool isBraking = false;
     private double speed = 0;
     private float moveInput; // Range from -1 to 1, -1 -> backward, 1 -> forward
@@ -82,7 +81,7 @@ public class CarController : MonoBehaviour
     private void Start()
     {
         HandleInputs();
-        SetPositionToStartPosition();
+        RememberStartPosition();
     }
 
     private void FixedUpdate()
@@ -141,14 +140,11 @@ public class CarController : MonoBehaviour
 
             if ((IsMovingForward() && moveInput < 0) || (IsMovingBackward() && moveInput > 0))
             {
-                //Debug.Log("eins");
                 frontAxelBrakeTorque = brakeTorque;
                 rearAxelBrakeTorque = brakeTorque;
             }
             else if (moveInput == 0)
             {
-                //Debug.Log("zwei");
-
                 frontAxelBrakeTorque = idleBrakeTorque;
                 rearAxelBrakeTorque = idleBrakeTorque;
             }
@@ -173,8 +169,6 @@ public class CarController : MonoBehaviour
             {
                 wheel.wheelCollider.brakeTorque = rearAxelBrakeTorque;
             }
-
-            Debug.Log(wheel.wheelCollider.brakeTorque);
         }
     }
 
@@ -264,8 +258,6 @@ public class CarController : MonoBehaviour
     {
         driftingEnabled = !driftingEnabled;
 
-        Debug.Log(driftingEnabled);
-
         foreach (var wheel in wheels)
         {
             if (wheel.axel == Axel.Rear)
@@ -295,7 +287,13 @@ public class CarController : MonoBehaviour
 
     private void SetPositionToStartPosition()
     {
-        transform.position = startPosition.position;
-        transform.rotation = startPosition.rotation;
+        transform.position = startPosition;
+        transform.rotation = startRotation;
+    }
+
+    private void RememberStartPosition()
+    {
+        startPosition = transform.position;
+        startRotation = transform.rotation;
     }
 }

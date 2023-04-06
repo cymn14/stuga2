@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Ball : MonoBehaviour
 {
@@ -14,15 +15,35 @@ public class Ball : MonoBehaviour
     [SerializeField]
     private TMP_Text devText;
 
-    [SerializeField]
-    private Transform startPosition;
-
     private float ballCollisionForceTimeOffset = 0.1f;
     private int ballTouchCounter = 0;
+    private Vector3 startPosition;
+    private Quaternion startRotation;
+    private InputAction respawnAction;
+    private PlayerInput playerInput;
+    private Rigidbody ballRigidbody;
+
+    private void Awake()
+    {
+        InitializeVariables();
+    }
 
     private void Start()
     {
-        SetPositionToStartPosition();
+        HandleInputs();
+        RememberStartPosition();
+    }
+
+    private void InitializeVariables()
+    {
+        ballRigidbody = GetComponent<Rigidbody>();
+        playerInput = GetComponent<PlayerInput>();
+        respawnAction = playerInput.actions["Respawn"];
+    }
+
+    private void HandleInputs()
+    {
+        respawnAction.performed += context => Respawn();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -68,7 +89,20 @@ public class Ball : MonoBehaviour
 
     private void SetPositionToStartPosition()
     {
-        transform.position = startPosition.position;
-        transform.rotation = startPosition.rotation;
+        transform.position = startPosition;
+        transform.rotation = startRotation;
+    }
+
+    private void RememberStartPosition()
+    {
+        startPosition = transform.position;
+        startRotation = transform.rotation;
+    }
+
+    public void Respawn()
+    {
+        ballRigidbody.velocity = Vector3.zero; // Setze die Geschwindigkeit auf Null
+        ballRigidbody.angularVelocity = Vector3.zero; // Setze den Drehimpuls auf Null
+        SetPositionToStartPosition();
     }
 }
