@@ -158,7 +158,7 @@ public class CarController : MonoBehaviour
 
         foreach (var wheel in wheels)
         {
-            wheel.wheelCollider.motorTorque = speed <= maxSpeed ? moveInput * motorTorque : 0;
+            wheel.wheelCollider.motorTorque = speed <= maxSpeed && IsWheelGrounded(wheel) ? moveInput * motorTorque : 0;
 
             if (wheel.axel == Axel.Front)
             {
@@ -170,6 +170,13 @@ public class CarController : MonoBehaviour
                 wheel.wheelCollider.brakeTorque = rearAxelBrakeTorque;
             }
         }
+    }
+
+    private static bool IsWheelGrounded(Wheel wheel)
+    {
+        WheelHit hit;
+        bool isGrounded = wheel.wheelCollider.GetGroundHit(out hit);
+        return isGrounded;
     }
 
     private void Steer()
@@ -296,4 +303,6 @@ public class CarController : MonoBehaviour
         startPosition = transform.position;
         startRotation = transform.rotation;
     }
+
+    
 }

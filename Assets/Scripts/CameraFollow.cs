@@ -13,13 +13,13 @@ public class CameraFollow : MonoBehaviour
 
     public Transform carTarget;
 
-    private InputAction lookAroundAction;
-    private PlayerInput playerInput;
+    //private InputAction lookAroundAction;
+    //private PlayerInput playerInput;
 
-    private Vector2 lookAroundVector; // Input des horizontalen Joystick-Achse
+    //private Vector2 lookAroundVector; // Input des horizontalen Joystick-Achse
 
-    private float horizontalInput = 0f; // Input des horizontalen Joystick-Achse
-    private float verticalInput = 0f; // Input des vertikalen Joystick-Achse
+    //private float horizontalInput = 0f; // Input des horizontalen Joystick-Achse
+    //private float verticalInput = 0f; // Input des vertikalen Joystick-Achse
 
     private void Awake()
     {
@@ -33,13 +33,13 @@ public class CameraFollow : MonoBehaviour
 
     private void InitializeVariables()
     {
-        playerInput = GetComponent<PlayerInput>();
-        lookAroundAction = playerInput.actions["LookAround"];
+        //playerInput = GetComponent<PlayerInput>();
+        //lookAroundAction = playerInput.actions["LookAround"];
     }
 
     private void HandleInputs()
     {
-        lookAroundAction.performed += context => lookAroundVector = context.ReadValue<Vector2>();
+        //lookAroundAction.performed += context => lookAroundVector = context.ReadValue<Vector2>();
         //lookAroundAction.canceled += context => horizontalInput = 0;
     }
 
@@ -47,8 +47,6 @@ public class CameraFollow : MonoBehaviour
     void FixedUpdate()
     {
         FollowTarget();
-
-        Debug.Log(lookAroundVector);
     }
 
     void FollowTarget()
