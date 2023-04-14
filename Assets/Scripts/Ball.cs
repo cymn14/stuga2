@@ -103,8 +103,10 @@ public class Ball : MonoBehaviour
 
     public void Reset()
     {
-        ballRigidbody.velocity = Vector3.zero; // Setze die Geschwindigkeit auf Null
-        ballRigidbody.angularVelocity = Vector3.zero; // Setze den Drehimpuls auf Null
+        gameObject.SetActive(false);
+        ballRigidbody.velocity = Vector3.zero;
+        ballRigidbody.angularVelocity = Vector3.zero;
+        gameObject.SetActive(true);
         SetPositionToStartPosition();
     }
 }

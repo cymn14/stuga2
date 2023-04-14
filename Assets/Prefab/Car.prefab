@@ -740,7 +740,7 @@ MonoBehaviour:
     wheelEffectObj: {fileID: 0}
     smokeParticle: {fileID: 0}
     axel: 1
-  devText: {fileID: 0}
+  textMeshProObject: {fileID: 0}
 --- !u!114 &2768940809601436663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -782,6 +782,18 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: cfbb89bd-3a51-425e-9026-4731a0e30b7d
     m_ActionName: Player/Steer Right
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 4f5b9e51-a574-4e60-ac9b-7492e8bc2ef2
+    m_ActionName: Player/Respawn
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: f7e4c441-00a6-4e5e-9744-2649b25cc9d0
+    m_ActionName: Player/DriftOnOff
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 96e00e7e-8b27-40b5-9b52-8b83ffff85bd
+    m_ActionName: Player/LookAround
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

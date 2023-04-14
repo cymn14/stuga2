@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,19 +8,17 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private List<RingGoal> ringGoals;
 
-    [SerializeField]
-    private TextMeshProUGUI timerText; // Reference to the TextMeshPro object in the scene
-
+    private StartCountdown startCountdown;
     private int goalHitCount = 0;
     private InputAction respawnAction;
     private PlayerInput playerInput;
-    private Canvas canvas;
-    private TextMeshProUGUI winText;
-    private TextMeshProUGUI winTime;
+    private WinScreen winScreen;
     private GameObject winScreenObj;
-    private float elapsedTime = 0f; // Elapsed time since the game started
-    private bool isTimerRunning = false; // Flag to check if the stopwatch is running
+    private Timer timer;
+    
     private GameObject[] ballGameObjects;
+    private CarController carController;
+    private bool isLevelRunning = false;
 
     private void Awake()
     {
@@ -35,38 +32,22 @@ public class GameController : MonoBehaviour
 
     }
 
-    private void Update()
-    {
-        if (isTimerRunning)
-        {
-            elapsedTime += Time.deltaTime; // Add the time since the last frame to the elapsed time
-            UpdateTimerText(); // Update the timer text display
-        }
-    }
-
-    private void UpdateTimerText()
-    {
-        int minutes = (int)(elapsedTime / 60f);
-        int seconds = (int)(elapsedTime % 60f);
-        int milliseconds = (int)((elapsedTime * 1000f) % 1000f);
-        timerText.text = string.Format("{0:00}:{1:00}:{2:0}", minutes, seconds, milliseconds / 100);
-    }
-
     public void GoalHit()
     {
         goalHitCount++;
 
         if (goalHitCount == ringGoals.Count)
         {
-            levelWon();
+            LevelWon();
         }
     }
 
-    private void levelWon()
+    private void LevelWon()
     {
-
-        winText.enabled = true;
-        isTimerRunning = false;
+        PauseGame();
+        isLevelRunning = false;
+        timer.StopTimer();
+        winScreen.setWinTime(timer.getFormattedTime());
         winScreenObj.SetActive(true);
     }
 
@@ -75,25 +56,24 @@ public class GameController : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         respawnAction = playerInput.actions["Respawn"];
 
-        canvas = GetComponentInChildren<Canvas>();
+        timer = GameObject.Find("Timer").GetComponent<Timer>();
+        startCountdown = GameObject.Find("Start Countdown").GetComponent<StartCountdown>();
 
-        GameObject timerObj = GameObject.Find("Timer");
-        timerText = timerObj.GetComponent<TextMeshProUGUI>();
-        GameObject winTextObj = GameObject.Find("Win Text");
-        winText = winTextObj.GetComponent<TextMeshProUGUI>();
-        GameObject winTimeObj = GameObject.Find("Win Time");
-        winTime = winTimeObj.GetComponent<TextMeshProUGUI>();
         winScreenObj = GameObject.Find("Win Screen");
+        winScreen = winScreenObj.GetComponent<WinScreen>();
 
         ballGameObjects = GameObject.FindGameObjectsWithTag("Ball");
+
+        GameObject carGameObject = GameObject.Find("Car");
+        carController = carGameObject.GetComponent<CarController>();
     }
 
     private void HandleInputs()
     {
-        respawnAction.performed += context => Retry();
+        respawnAction.performed += context => Respawn();
     }
 
-    private void ResetBalls()
+    private void ResetAllBalls()
     {
         foreach (var ballGameObject in ballGameObjects)
         {
@@ -102,29 +82,70 @@ public class GameController : MonoBehaviour
         }
     }
 
+    private void ResetCar()
+    {
+        carController.Reset();
+    }
+
+    public void FellDown()
+    {
+        Retry();
+    }
+
+    public void Respawn()
+    {
+        Retry();
+    }
+
     public void Retry()
     {
+        isLevelRunning = false;
         goalHitCount = 0;
-        elapsedTime = 0;
+        timer.StopTimer();
+        timer.ResetTimer();
 
         foreach (var ringGoal in ringGoals)
         {
             ringGoal.Reset();
         }
 
-        ResetBalls();
+        ResetAllBalls();
+        ResetCar();
 
         StartLevel();
     }
 
     public void StartLevel()
     {
+        ContinueGame();
         winScreenObj.SetActive(false);
-        isTimerRunning = true;
+        startCountdown.BeginCountdown();
     }
+
+    public void StartCountdownFinished()
+    {
+        isLevelRunning = true;
+        timer.StartTimer();
+    }
+
 
     public void NextLevel()
     {
         Debug.Log("next level");
+    }
+
+    public bool getIsLevelRunning()
+    {
+        return isLevelRunning;
+    }
+
+    private void PauseGame()
+    {
+        Time.timeScale = 0;
+    }
+
+    private void ContinueGame()
+    {
+        Time.timeScale = 1;
     }
 }

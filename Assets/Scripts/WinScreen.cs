@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,8 +8,8 @@ public class WinScreen : MonoBehaviour
 {
     private InputAction retryAction;
     private PlayerInput playerInput;
-    private GameObject GameControllerObj;
-    private GameController GameController;
+    private GameController gameController;
+    private TextMeshProUGUI winTime;
 
     private void Awake()
     {
@@ -25,12 +26,18 @@ public class WinScreen : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         retryAction = playerInput.actions["Retry"];
 
-        GameControllerObj = GameObject.Find("GameController");
-        GameController = GameControllerObj.GetComponent<GameController>();
+        gameController = GameObject.Find("GameController").GetComponent<GameController>();
+
+        winTime = GameObject.Find("Win Time").GetComponent<TextMeshProUGUI>();
     }
 
     private void HandleInputs()
     {
-        retryAction.performed += context => GameController.Retry();
+        retryAction.performed += context => gameController.Retry();
+    }
+
+    public void setWinTime(string time)
+    {
+        winTime.text = time;
     }
 }

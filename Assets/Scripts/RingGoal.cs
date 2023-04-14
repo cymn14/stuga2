@@ -14,6 +14,13 @@ public class RingGoal : MonoBehaviour
     private bool hasBallPassed = false;
     private Color hitColor = Color.green;
     private Color notHitColor = Color.black;
+    private AudioSource audioSource;
+
+
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -21,6 +28,7 @@ public class RingGoal : MonoBehaviour
         {
             if (!hasBallPassed)
             {
+                audioSource.Play();
                 hasBallPassed = true;
                 ringGoalText.color = hitColor;
                 gameController.GoalHit();

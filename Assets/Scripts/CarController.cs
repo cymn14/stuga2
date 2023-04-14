@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using TMPro;
-using System.Collections;
 
 public class CarController : MonoBehaviour
 {
@@ -28,9 +26,6 @@ public class CarController : MonoBehaviour
     [SerializeField]
     private List<Wheel> wheels;
 
-    [SerializeField]
-    private TextMeshProUGUI textMeshProObject;
-
     private enum Axel
     {
         Front,
@@ -51,16 +46,15 @@ public class CarController : MonoBehaviour
     private InputAction brakeAction;
     private InputAction moveAction;
     private InputAction steerAction;
-    private InputAction respawnAction;
     private InputAction driftOnOffAction;
     private PlayerInput playerInput;
+    private GameController gameController;
     private Vector3 startPosition;
     private Quaternion startRotation;
     private bool isBraking = false;
     private double speed = 0;
     private float moveInput; // Range from -1 to 1, -1 -> backward, 1 -> forward
     private float steerInput; // Range from -1 to 1, -1 -> left, 1 -> right
-    private bool respawned = false;
     private bool driftingEnabled = true;
 
     private float rearWheelExtremumSlipNonDrift = 1.5f;
@@ -86,10 +80,13 @@ public class CarController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        UpdateSpeed();
-        Move();
-        Steer();
-        AnimateWheels();
+        if (gameController.getIsLevelRunning())
+        {
+            UpdateSpeed();
+            Move();
+            Steer();
+            AnimateWheels();
+        }
     }
 
     private void UpdateSpeed()
@@ -103,11 +100,12 @@ public class CarController : MonoBehaviour
         brakeAction = playerInput.actions["Brake"];
         moveAction = playerInput.actions["Move"];
         steerAction = playerInput.actions["Steer"];
-        respawnAction = playerInput.actions["Respawn"];
         driftOnOffAction = playerInput.actions["DriftOnOff"];
 
         carRigidbody = GetComponent<Rigidbody>();
         carRigidbody.centerOfMass = _centerOfMass;
+
+        gameController = GameObject.Find("GameController").GetComponent<GameController>();
     }
 
     private void HandleInputs()
@@ -118,7 +116,6 @@ public class CarController : MonoBehaviour
         moveAction.canceled += context => moveInput = 0;
         steerAction.performed += context => steerInput = context.ReadValue<float>();
         steerAction.canceled += context => steerInput = 0;
-        respawnAction.performed += context => Respawn();
         driftOnOffAction.performed += context => ToggleDriftMode();
     }
 
@@ -127,34 +124,21 @@ public class CarController : MonoBehaviour
         float frontAxelBrakeTorque = 0;
         float rearAxelBrakeTorque = 0;
 
-        if (respawned)
+        if ((IsMovingForward() && moveInput < 0) || (IsMovingBackward() && moveInput > 0))
         {
-            frontAxelBrakeTorque = float.MaxValue;
-            rearAxelBrakeTorque = float.MaxValue;
-            carRigidbody.isKinematic = true;
-            respawned = false;
+            frontAxelBrakeTorque = brakeTorque;
+            rearAxelBrakeTorque = brakeTorque;
         }
-        else
+        else if (moveInput == 0)
         {
-            carRigidbody.isKinematic = false;
-
-            if ((IsMovingForward() && moveInput < 0) || (IsMovingBackward() && moveInput > 0))
-            {
-                frontAxelBrakeTorque = brakeTorque;
-                rearAxelBrakeTorque = brakeTorque;
-            }
-            else if (moveInput == 0)
-            {
-                frontAxelBrakeTorque = idleBrakeTorque;
-                rearAxelBrakeTorque = idleBrakeTorque;
-            }
-
-            if (isBraking)
-            {
-                rearAxelBrakeTorque = brakeTorque;
-            }
+            frontAxelBrakeTorque = idleBrakeTorque;
+            rearAxelBrakeTorque = idleBrakeTorque;
         }
 
+        if (isBraking)
+        {
+            rearAxelBrakeTorque = brakeTorque;
+        }
 
         foreach (var wheel in wheels)
         {
@@ -250,14 +234,15 @@ public class CarController : MonoBehaviour
     {
         if (collider.tag == "PlaneOfDoom")
         {
-            Respawn();
+            gameController.FellDown();
         }
-
     }
 
-    public void Respawn()
+    public void Reset()
     {
-        respawned = true;
+        gameObject.SetActive(false);
+        gameObject.SetActive(true);
+
         SetPositionToStartPosition();
     }
 
