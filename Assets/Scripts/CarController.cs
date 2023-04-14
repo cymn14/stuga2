@@ -29,7 +29,7 @@ public class CarController : MonoBehaviour
     private List<Wheel> wheels;
 
     [SerializeField]
-    private TMP_Text devText;
+    private TextMeshProUGUI textMeshProObject;
 
     private enum Axel
     {
@@ -303,6 +303,4 @@ public class CarController : MonoBehaviour
         startPosition = transform.position;
         startRotation = transform.rotation;
     }
-
-    
 }

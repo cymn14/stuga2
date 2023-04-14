@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 
 public class Ball : MonoBehaviour
 {
@@ -11,9 +12,6 @@ public class Ball : MonoBehaviour
 
     [SerializeField]
     private float wallCollisionForce = 1f;
-
-    [SerializeField]
-    private TMP_Text devText;
 
     private float ballCollisionForceTimeOffset = 0.1f;
     private int ballTouchCounter = 0;
@@ -43,21 +41,25 @@ public class Ball : MonoBehaviour
 
     private void HandleInputs()
     {
-        respawnAction.performed += context => Respawn();
+        respawnAction.performed += context => Reset();
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        //if (other.tag == "RingGoal")
+        //{
+        //    Debug.Log("went through!");
+        //}
 
-        if (other.tag == "Goal")
-        {
-            print("You win");
-        }
+        //if (other.tag == "Goal")
+        //{
 
-        else if (other.tag == "Player")
-        {
-            print("player trigger");
-        }
+        //}
+
+        //else if (other.tag == "Player")
+        //{
+        //    print("player trigger");
+        //}
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -99,7 +101,7 @@ public class Ball : MonoBehaviour
         startRotation = transform.rotation;
     }
 
-    public void Respawn()
+    public void Reset()
     {
         ballRigidbody.velocity = Vector3.zero; // Setze die Geschwindigkeit auf Null
         ballRigidbody.angularVelocity = Vector3.zero; // Setze den Drehimpuls auf Null

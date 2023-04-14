@@ -8,6 +8,8 @@ TagManager:
   - Ball
   - Goal
   - Wall
+  - RingGoal
+  - BallTrigger
   layers:
   - Default
   - TransparentFX

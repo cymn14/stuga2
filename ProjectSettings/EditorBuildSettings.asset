@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/TestLevel3 1.unity
+    path: Assets/Scenes/HalfPipe.unity
     guid: e2428d6a9c577494182e28cf4ac02b1f
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 924ffed855a0a45098c43f2b5598a1f9, type: 2}

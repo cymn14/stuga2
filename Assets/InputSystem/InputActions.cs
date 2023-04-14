@@ -181,6 +181,34 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Win Screen"",
+            ""id"": ""2f036eaa-ec06-40eb-867f-4647bcec9f91"",
+            ""actions"": [
+                {
+                    ""name"": ""Retry"",
+                    ""type"": ""Button"",
+                    ""id"": ""e9b090cf-7eb7-4a78-86f7-7e9fd967a313"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""189642bb-3c16-4b88-822c-cc0bb1f4e1ea"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Retry"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -194,6 +222,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_Player_Respawn = m_Player.FindAction("Respawn", throwIfNotFound: true);
         m_Player_DriftOnOff = m_Player.FindAction("DriftOnOff", throwIfNotFound: true);
         m_Player_LookAround = m_Player.FindAction("LookAround", throwIfNotFound: true);
+        // Win Screen
+        m_WinScreen = asset.FindActionMap("Win Screen", throwIfNotFound: true);
+        m_WinScreen_Retry = m_WinScreen.FindAction("Retry", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -345,6 +376,52 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Win Screen
+    private readonly InputActionMap m_WinScreen;
+    private List<IWinScreenActions> m_WinScreenActionsCallbackInterfaces = new List<IWinScreenActions>();
+    private readonly InputAction m_WinScreen_Retry;
+    public struct WinScreenActions
+    {
+        private @InputActions m_Wrapper;
+        public WinScreenActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Retry => m_Wrapper.m_WinScreen_Retry;
+        public InputActionMap Get() { return m_Wrapper.m_WinScreen; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(WinScreenActions set) { return set.Get(); }
+        public void AddCallbacks(IWinScreenActions instance)
+        {
+            if (instance == null || m_Wrapper.m_WinScreenActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_WinScreenActionsCallbackInterfaces.Add(instance);
+            @Retry.started += instance.OnRetry;
+            @Retry.performed += instance.OnRetry;
+            @Retry.canceled += instance.OnRetry;
+        }
+
+        private void UnregisterCallbacks(IWinScreenActions instance)
+        {
+            @Retry.started -= instance.OnRetry;
+            @Retry.performed -= instance.OnRetry;
+            @Retry.canceled -= instance.OnRetry;
+        }
+
+        public void RemoveCallbacks(IWinScreenActions instance)
+        {
+            if (m_Wrapper.m_WinScreenActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IWinScreenActions instance)
+        {
+            foreach (var item in m_Wrapper.m_WinScreenActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_WinScreenActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public WinScreenActions @WinScreen => new WinScreenActions(this);
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -354,5 +431,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         void OnRespawn(InputAction.CallbackContext context);
         void OnDriftOnOff(InputAction.CallbackContext context);
         void OnLookAround(InputAction.CallbackContext context);
+    }
+    public interface IWinScreenActions
+    {
+        void OnRetry(InputAction.CallbackContext context);
     }
 }

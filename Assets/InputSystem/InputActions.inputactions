@@ -159,6 +159,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Win Screen",
+            "id": "2f036eaa-ec06-40eb-867f-4647bcec9f91",
+            "actions": [
+                {
+                    "name": "Retry",
+                    "type": "Button",
+                    "id": "e9b090cf-7eb7-4a78-86f7-7e9fd967a313",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "189642bb-3c16-4b88-822c-cc0bb1f4e1ea",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Retry",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
