@@ -1,16 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class WinScreen : MonoBehaviour
 {
+    [SerializeField]
+    private GameController gameController;
+
+    [SerializeField]
+    private TextMeshProUGUI winTime;
+
     private InputAction retryAction;
     private InputAction nextLevelAction;
-    private PlayerInput playerInput;
-    private GameController gameController;
-    private TextMeshProUGUI winTime;
+    private PlayerInput playerInput;    
 
     private void Awake()
     {
@@ -27,10 +29,6 @@ public class WinScreen : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         retryAction = playerInput.actions["Retry"];
         nextLevelAction = playerInput.actions["Next Level"];
-
-        gameController = GameObject.Find("GameController").GetComponent<GameController>();
-
-        winTime = GameObject.Find("Win Time").GetComponent<TextMeshProUGUI>();
     }
 
     private void HandleInputs()

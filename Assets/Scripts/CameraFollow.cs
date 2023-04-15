@@ -5,13 +5,22 @@ using UnityEngine.InputSystem;
 
 public class CameraFollow : MonoBehaviour
 {
-    public float moveSmoothness;
-    public float rotSmoothness;
+    [SerializeField]
+    private float moveSmoothness;
 
-    public Vector3 moveOffset;
-    public Vector3 rotOffset;
+    [SerializeField]
+    private float rotSmoothness;
 
-    public Transform carTarget;
+    [SerializeField]
+    private Vector3 moveOffset;
+
+    [SerializeField]
+    private Vector3 rotOffset;
+
+    private Transform carTransform;
+    private Vector3 startPosition;
+    private Quaternion startRotation;
+    private Vector3 targetPos;
 
     //private InputAction lookAroundAction;
     //private PlayerInput playerInput;
@@ -29,10 +38,19 @@ public class CameraFollow : MonoBehaviour
     private void Start()
     {
         HandleInputs();
+        SetPositionToCarPosition();
+    }
+
+    public void Reset()
+    {
+        SetPositionToCarPosition();
     }
 
     private void InitializeVariables()
     {
+        carTransform = GameObject.Find("Car").GetComponent<Transform>();
+        targetPos = carTransform.TransformPoint(moveOffset);
+
         //playerInput = GetComponent<PlayerInput>();
         //lookAroundAction = playerInput.actions["LookAround"];
     }
@@ -57,19 +75,23 @@ public class CameraFollow : MonoBehaviour
 
     void HandleMovement()
     {
-        Vector3 targetPos = new Vector3();
-        targetPos = carTarget.TransformPoint(moveOffset);
-
+        targetPos = carTransform.TransformPoint(moveOffset);
         transform.position = Vector3.Lerp(transform.position, targetPos, moveSmoothness * Time.deltaTime);
     }
 
     void HandleRotation()
     {
-        var direction = carTarget.position - transform.position;
+        var direction = carTransform.position - transform.position;
         var rotation = new Quaternion();
 
         rotation = Quaternion.LookRotation(direction + rotOffset, Vector3.up);
 
         transform.rotation = Quaternion.Lerp(transform.rotation, rotation, rotSmoothness * Time.deltaTime);
+    }
+
+    private void SetPositionToCarPosition()
+    {
+        transform.position = targetPos;
+        transform.rotation = carTransform.rotation;
     }
 }

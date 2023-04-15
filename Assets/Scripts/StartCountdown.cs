@@ -1,18 +1,20 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class StartCountdown : MonoBehaviour
 {
-    private TextMeshProUGUI countdownText;
+    [SerializeField]
     private GameController gameController;
+
+    [SerializeField]
     private int secondsToWait = 2;
+
+    private TextMeshProUGUI countdownText;
     private int countdown;
 
     private void Awake()
     {
-        gameController = GameObject.Find("GameController").GetComponent<GameController>();
         countdownText = gameObject.GetComponent<TextMeshProUGUI>();
     }
 

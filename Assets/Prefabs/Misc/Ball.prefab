@@ -29,7 +29,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2733913576750035921}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 193.26, y: 13.206116, z: 111.86}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
@@ -150,6 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ballCollisionForce: 1.5
   wallCollisionForce: 1.5
+  gravityDisabled: 1
 --- !u!114 &513162480461993210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,7 +191,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7746162621819916067}
   - component: {fileID: 2165647491462906238}
-  - component: {fileID: 8584476851599689424}
   m_Layer: 0
   m_Name: Trigger
   m_TagString: BallTrigger
@@ -232,17 +232,5 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.1
+  m_Radius: 0.2
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8584476851599689424
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7335697950278361080}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 709792190e8b940089e11d281e511563, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

@@ -1,9 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System;
 
 public class Ball : MonoBehaviour
 {
@@ -13,8 +10,10 @@ public class Ball : MonoBehaviour
     [SerializeField]
     private float wallCollisionForce = 1f;
 
+    [SerializeField]
+    private bool gravityDisabled = false;
+
     private float ballCollisionForceTimeOffset = 0.1f;
-    private int ballTouchCounter = 0;
     private Vector3 startPosition;
     private Quaternion startRotation;
     private InputAction respawnAction;
@@ -24,6 +23,11 @@ public class Ball : MonoBehaviour
     private void Awake()
     {
         InitializeVariables();
+
+        if (gravityDisabled)
+        {
+            ballRigidbody.useGravity = false;
+        }
     }
 
     private void Start()
@@ -44,30 +48,16 @@ public class Ball : MonoBehaviour
         respawnAction.performed += context => Reset();
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        //if (other.tag == "RingGoal")
-        //{
-        //    Debug.Log("went through!");
-        //}
-
-        //if (other.tag == "Goal")
-        //{
-
-        //}
-
-        //else if (other.tag == "Player")
-        //{
-        //    print("player trigger");
-        //}
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.tag == "Player")
         {
+            if (gravityDisabled)
+            {
+                ballRigidbody.useGravity = true;
+            }
+
             StartCoroutine(AddBallForce(ballCollisionForceTimeOffset, ballCollisionForce));
-            BallTouched();
         }
 
         if (collision.collider.tag == "Wall")
@@ -79,14 +69,7 @@ public class Ball : MonoBehaviour
     IEnumerator AddBallForce(float time, float ballForce)
     {
         yield return new WaitForSeconds(time);
-        Rigidbody ballRb = gameObject.GetComponent<Rigidbody>();
-        ballRb.AddForce(ballRb.velocity * ballForce, ForceMode.Impulse);
-    }
-    
-    private void BallTouched()
-    {
-        ballTouchCounter++;
-        //devText.text = ballTouchCounter.ToString();
+        ballRigidbody.AddForce(ballRigidbody.velocity * ballForce, ForceMode.Impulse);
     }
 
     private void SetPositionToStartPosition()
@@ -103,6 +86,11 @@ public class Ball : MonoBehaviour
 
     public void Reset()
     {
+        if (gravityDisabled)
+        {
+            ballRigidbody.useGravity = false;
+        }
+
         gameObject.SetActive(false);
         ballRigidbody.velocity = Vector3.zero;
         ballRigidbody.angularVelocity = Vector3.zero;

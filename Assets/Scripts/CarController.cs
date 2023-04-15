@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.ParticleSystem;
 
 public class CarController : MonoBehaviour
 {
@@ -86,6 +87,21 @@ public class CarController : MonoBehaviour
             Move();
             Steer();
             AnimateWheels();
+
+            //bool isDrifting = IsDrifting();
+
+            //foreach (var smokeParticleSytem in wheelSmokeParticleSystems)
+            //{
+            //    if (isDrifting)
+            //    {
+            //        smokeParticleSytem.Play();
+
+            //    }
+            //    else
+            //    {
+            //        smokeParticleSytem.Pause();
+            //    }
+            //}
         }
     }
 
@@ -152,15 +168,43 @@ public class CarController : MonoBehaviour
             if (wheel.axel == Axel.Rear)
             {
                 wheel.wheelCollider.brakeTorque = rearAxelBrakeTorque;
+
+                var emission = wheel.smokeParticle.emission;
+
+                if (IsDrifting())
+                {
+                    emission.rateOverTime = 60f;
+                }
+                else
+                {
+                    emission.rateOverTime = 0f;
+                }
             }
         }
     }
 
-    private static bool IsWheelGrounded(Wheel wheel)
+    private bool IsWheelGrounded(Wheel wheel)
     {
         WheelHit hit;
         bool isGrounded = wheel.wheelCollider.GetGroundHit(out hit);
         return isGrounded;
+    }
+
+    private bool AreAllWheelsGrounded()
+    {
+        foreach (var wheel in wheels)
+        {
+            WheelHit hit;
+            bool isGrounded = wheel.wheelCollider.GetGroundHit(out hit);
+
+            if (!isGrounded)
+            {
+                return false;
+            }
+        }
+
+        
+        return true;
     }
 
     private void Steer()
@@ -287,5 +331,53 @@ public class CarController : MonoBehaviour
     {
         startPosition = transform.position;
         startRotation = transform.rotation;
+    }
+
+    private bool IsDrifting()
+    {
+        Vector3 forward = transform.forward;
+        Vector3 velocity = carRigidbody.velocity;
+        float driftAngle = Vector3.Angle(forward, velocity);
+        float driftAngleTreshold = 20f;
+
+        float spinThreshold = 1f;
+
+    bool isRearWheelDrifting = false;
+
+        if (moveInput > 0)
+        {
+            foreach (var wheel in wheels)
+            {
+                if (wheel.axel == Axel.Rear)
+                {
+                    //float leftWheelAngularVelocity = wheel.wheelCollider.rpm * Mathf.PI / 30f;
+                    //float spinThreshold = 20f;
+
+                    //isRearWheelDrifting = leftWheelAngularVelocity > spinThreshold;
+
+                    WheelHit hit;
+                    float leftWheelAngularVelocity = 0f;
+
+                    if (wheel.wheelCollider.GetGroundHit(out hit))
+                    {
+                        leftWheelAngularVelocity = hit.forwardSlip * wheel.wheelCollider.radius;
+                    }
+
+                  
+
+                    if (leftWheelAngularVelocity > spinThreshold)
+                    {
+                        isRearWheelDrifting = true;
+                    }
+                    else
+                    {
+                        isRearWheelDrifting = false;
+                    }
+                }
+            }
+        }
+
+        //return isRearWheelDrifting && AreAllWheelsGrounded();
+        return isRearWheelDrifting;
     }
 }

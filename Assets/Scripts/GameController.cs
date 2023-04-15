@@ -17,20 +17,32 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private GameObject goalIndicatorPrefab;
 
-    private List<RingGoal> ringGoals;
-    private List<GoalIndicator> goalIndicators;
+    [SerializeField]
+    private CameraFollow cameraFollow;
+
+    [SerializeField]
+    private Timer timer;
+
+    [SerializeField]
     private StartCountdown startCountdown;
+
+    [SerializeField]
+    private WinScreen winScreen;
+
+    [SerializeField]
+    private GameObject winScreenObj;
+
+    [SerializeField]
+    private LevelController levelController;
+
+    private List<Goal> goals;
+    private List<GoalIndicator> goalIndicators;
     private int goalHitCount = 0;
     private InputAction respawnAction;
     private PlayerInput playerInput;
-    private WinScreen winScreen;
-    private GameObject winScreenObj;
-    private Timer timer;
     private GameObject[] ballGameObjects;
     private CarController carController;
-    private LevelController levelController;
     private bool isLevelRunning = false;
-
 
     private void Awake()
     {
@@ -50,7 +62,7 @@ public class GameController : MonoBehaviour
 
         UpdateGoalIndicators();
 
-        if (goalHitCount == ringGoals.Count)
+        if (goalHitCount == goals.Count)
         {
             LevelWon();
         }
@@ -70,25 +82,17 @@ public class GameController : MonoBehaviour
     {
         playerInput = GetComponent<PlayerInput>();
         respawnAction = playerInput.actions["Respawn"];
-
-        timer = GameObject.Find("Timer").GetComponent<Timer>();
-        startCountdown = GameObject.Find("Start Countdown").GetComponent<StartCountdown>();
-        levelController = GameObject.Find("LevelController").GetComponent<LevelController>();
-
-        winScreenObj = GameObject.Find("Win Screen");
-        winScreen = winScreenObj.GetComponent<WinScreen>();
-
         ballGameObjects = GameObject.FindGameObjectsWithTag("Ball");
 
         GameObject carGameObject = GameObject.Find("Car");
         carController = carGameObject.GetComponent<CarController>();
 
-        ringGoals = new List<RingGoal>();
+        goals = new List<Goal>();
         goalIndicators = new List<GoalIndicator>();
 
         foreach (var ringGoalObject in GameObject.FindGameObjectsWithTag("RingGoal"))
         {
-            ringGoals.Add(ringGoalObject.GetComponent<RingGoal>());
+            goals.Add(ringGoalObject.GetComponent<Goal>());
         }
 
         createGoalIndicatorGameObjects();
@@ -113,6 +117,11 @@ public class GameController : MonoBehaviour
         carController.Reset();
     }
 
+    private void ResetCamera()
+    {
+        cameraFollow.Reset();
+    }
+
     public void FellDown()
     {
         Retry();
@@ -130,14 +139,14 @@ public class GameController : MonoBehaviour
         timer.StopTimer();
         timer.ResetTimer();
 
-        foreach (var ringGoal in ringGoals)
+        foreach (var ringGoal in goals)
         {
             ringGoal.Reset();
         }
 
         ResetAllBalls();
         ResetCar();
-
+        ResetCamera();
         StartLevel();
     }
 
@@ -184,7 +193,7 @@ public class GameController : MonoBehaviour
         float offset = 30f; // The offset between each copy
         int i = 0;
 
-        foreach (var ringGoal in ringGoals)
+        foreach (var ringGoal in goals)
         {
             GameObject newGoalIndicatorGameObject = Instantiate(goalIndicatorPrefab);
             newGoalIndicatorGameObject.transform.SetParent(parentFolder.transform, false);
