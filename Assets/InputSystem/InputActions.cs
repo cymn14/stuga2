@@ -194,6 +194,15 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Next Level"",
+                    ""type"": ""Button"",
+                    ""id"": ""3ee3addc-6de4-4804-96ee-13b30b895b80"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -205,6 +214,17 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Retry"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""73cc719d-0aac-4853-8957-194e5b9746d8"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Next Level"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -225,6 +245,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         // Win Screen
         m_WinScreen = asset.FindActionMap("Win Screen", throwIfNotFound: true);
         m_WinScreen_Retry = m_WinScreen.FindAction("Retry", throwIfNotFound: true);
+        m_WinScreen_NextLevel = m_WinScreen.FindAction("Next Level", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -381,11 +402,13 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_WinScreen;
     private List<IWinScreenActions> m_WinScreenActionsCallbackInterfaces = new List<IWinScreenActions>();
     private readonly InputAction m_WinScreen_Retry;
+    private readonly InputAction m_WinScreen_NextLevel;
     public struct WinScreenActions
     {
         private @InputActions m_Wrapper;
         public WinScreenActions(@InputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Retry => m_Wrapper.m_WinScreen_Retry;
+        public InputAction @NextLevel => m_Wrapper.m_WinScreen_NextLevel;
         public InputActionMap Get() { return m_Wrapper.m_WinScreen; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -398,6 +421,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Retry.started += instance.OnRetry;
             @Retry.performed += instance.OnRetry;
             @Retry.canceled += instance.OnRetry;
+            @NextLevel.started += instance.OnNextLevel;
+            @NextLevel.performed += instance.OnNextLevel;
+            @NextLevel.canceled += instance.OnNextLevel;
         }
 
         private void UnregisterCallbacks(IWinScreenActions instance)
@@ -405,6 +431,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Retry.started -= instance.OnRetry;
             @Retry.performed -= instance.OnRetry;
             @Retry.canceled -= instance.OnRetry;
+            @NextLevel.started -= instance.OnNextLevel;
+            @NextLevel.performed -= instance.OnNextLevel;
+            @NextLevel.canceled -= instance.OnNextLevel;
         }
 
         public void RemoveCallbacks(IWinScreenActions instance)
@@ -435,5 +464,6 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     public interface IWinScreenActions
     {
         void OnRetry(InputAction.CallbackContext context);
+        void OnNextLevel(InputAction.CallbackContext context);
     }
 }

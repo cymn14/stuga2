@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 public class WinScreen : MonoBehaviour
 {
     private InputAction retryAction;
+    private InputAction nextLevelAction;
     private PlayerInput playerInput;
     private GameController gameController;
     private TextMeshProUGUI winTime;
@@ -25,6 +26,7 @@ public class WinScreen : MonoBehaviour
     {
         playerInput = GetComponent<PlayerInput>();
         retryAction = playerInput.actions["Retry"];
+        nextLevelAction = playerInput.actions["Next Level"];
 
         gameController = GameObject.Find("GameController").GetComponent<GameController>();
 
@@ -34,6 +36,7 @@ public class WinScreen : MonoBehaviour
     private void HandleInputs()
     {
         retryAction.performed += context => gameController.Retry();
+        nextLevelAction.performed += context => gameController.NextLevel();
     }
 
     public void setWinTime(string time)
