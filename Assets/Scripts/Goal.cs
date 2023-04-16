@@ -2,20 +2,46 @@ using UnityEngine;
 
 public class Goal : MonoBehaviour
 {
+    [SerializeField]
+    private GoalTriggerEnum goalTrigger = GoalTriggerEnum.Ball;
+
+    public enum GoalTriggerEnum
+    {
+        Ball,
+        Car,
+    }
+
     private GameController gameController;
     private bool hasBallPassed = false;
     private Color hitColor = Color.green;
-    private Color notHitColor = Color.cyan;
+    private Color ballTriggerColor = Color.cyan;
+    private Color carTriggerColor = Color.magenta;
     private Renderer ringRenderer;
 
     private void Awake()
     {
         gameController = GameObject.Find("GameController").GetComponent<GameController>();
         ringRenderer = GetComponent<Renderer>();
-        ringRenderer.material.color = notHitColor;
+        SetColor();
     }
 
-    public void Trigger()
+    public void CarTrigger()
+    {
+        if (goalTrigger == GoalTriggerEnum.Car)
+        {
+            Trigger();
+        }
+    }
+
+    public void BallTrigger()
+    {
+        if (goalTrigger == GoalTriggerEnum.Ball)
+        {
+            Trigger();
+        }
+    }
+
+    private void Trigger()
     {
         if (!hasBallPassed)
         {
@@ -28,6 +54,19 @@ public class Goal : MonoBehaviour
     public void Reset()
     {
         hasBallPassed = false;
-        ringRenderer.material.color = notHitColor;
+
+        SetColor();
+    }
+
+    private void SetColor()
+    {
+        if (goalTrigger == GoalTriggerEnum.Ball)
+        {
+            ringRenderer.material.color = ballTriggerColor;
+        }
+        else if (goalTrigger == GoalTriggerEnum.Car)
+        {
+            ringRenderer.material.color = carTriggerColor;
+        }
     }
 }

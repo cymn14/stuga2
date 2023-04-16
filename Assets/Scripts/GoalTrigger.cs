@@ -15,7 +15,12 @@ public class GoalTrigger : MonoBehaviour
     {
         if (other.gameObject.CompareTag("BallTrigger"))
         {
-            goal.Trigger();
+            goal.BallTrigger();
+        }
+
+        if (other.gameObject.CompareTag("CarTrigger"))
+        {
+            goal.CarTrigger();
         }
     }
 }

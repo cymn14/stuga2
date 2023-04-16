@@ -51,15 +51,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "DriftOnOff",
-                    "type": "Button",
-                    "id": "f7e4c441-00a6-4e5e-9744-2649b25cc9d0",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "LookAround",
                     "type": "Value",
                     "id": "96e00e7e-8b27-40b5-9b52-8b83ffff85bd",
@@ -144,17 +135,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Respawn",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2401b204-473b-4d8c-897d-06a94bd7d99d",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DriftOnOff",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

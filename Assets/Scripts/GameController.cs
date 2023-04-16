@@ -15,6 +15,9 @@ public class GameController : MonoBehaviour
     private AudioSource levelWonAudioSource;
 
     [SerializeField]
+    private AudioSource soundtrack;
+
+    [SerializeField]
     private GameObject goalIndicatorPrefab;
 
     [SerializeField]
@@ -162,6 +165,7 @@ public class GameController : MonoBehaviour
     {
         isLevelRunning = true;
         timer.StartTimer();
+        soundtrack.Play();
     }
 
 
@@ -190,7 +194,9 @@ public class GameController : MonoBehaviour
         string parentFolderName = "Goal Indicators";
         GameObject parentFolder = GameObject.Find(parentFolderName);
 
-        float offset = 30f; // The offset between each copy
+        float top = 0f;
+        float right = 0f;
+        float itemSpacing = 30f; // The offset between each copy
         int i = 0;
 
         foreach (var ringGoal in goals)
@@ -198,11 +204,12 @@ public class GameController : MonoBehaviour
             GameObject newGoalIndicatorGameObject = Instantiate(goalIndicatorPrefab);
             newGoalIndicatorGameObject.transform.SetParent(parentFolder.transform, false);
             GoalIndicator goalIndicator = newGoalIndicatorGameObject.GetComponent<GoalIndicator>();
-            goalIndicators.Add(goalIndicator);
+            RectTransform rectTransform = newGoalIndicatorGameObject.GetComponent<RectTransform>();
 
-            // Set the position of the new object relative to the original object
-            Vector3 originalPosition = goalIndicatorPrefab.transform.position;
-            newGoalIndicatorGameObject.transform.position = new Vector3(originalPosition.x - (i + 1) * offset, originalPosition.y, originalPosition.z);
+            Vector2 currentPosition = rectTransform.anchoredPosition;
+            Vector2 newPosition = new Vector2(Screen.width / 2 - right - i * itemSpacing - rectTransform.sizeDelta.x / 2f, Screen.height / 2 - top - rectTransform.sizeDelta.y / 2f);
+            rectTransform.anchoredPosition = newPosition;
+            goalIndicators.Add(goalIndicator);
 
             int copyNumber = i + 1;
             newGoalIndicatorGameObject.name = goalIndicatorPrefab.name + " " + copyNumber;

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.ParticleSystem;
 
 public class CarController : MonoBehaviour
 {
@@ -20,6 +19,15 @@ public class CarController : MonoBehaviour
 
     [SerializeField]
     private float idleBrakeTorque = 100f;
+
+    [SerializeField]
+    private float tresholdForDriftingParticles = 0.8f;
+
+    [SerializeField]
+    private float minSpeedForDriftParticles = 0.8f;
+
+    [SerializeField]
+    private float driftParticleEmissionRateOverTime = 100f;
 
     [SerializeField]
     private Vector3 _centerOfMass;
@@ -47,7 +55,6 @@ public class CarController : MonoBehaviour
     private InputAction brakeAction;
     private InputAction moveAction;
     private InputAction steerAction;
-    private InputAction driftOnOffAction;
     private PlayerInput playerInput;
     private GameController gameController;
     private Vector3 startPosition;
@@ -56,17 +63,9 @@ public class CarController : MonoBehaviour
     private double speed = 0;
     private float moveInput; // Range from -1 to 1, -1 -> backward, 1 -> forward
     private float steerInput; // Range from -1 to 1, -1 -> left, 1 -> right
-    private bool driftingEnabled = true;
 
-    private float rearWheelExtremumSlipNonDrift = 1.5f;
-    private float rearWheelExtremumValueNonDrift = 1.5f;
-
-    private float rearWheelExtremumSlipDrift = 1.5f;
-    private float rearWheelExtremumValueDrift = 0.6f;
-
-    private float rearWheelAsymptoteSlip = 0.5f;
-    private float rearWheelAsymptoteValue = 0.75f;
-    private float rearWheelStiffness = 2.4f;
+    private bool isDrifting = false;
+    private int movingDirection = 0;
 
     private void Awake()
     {
@@ -87,22 +86,31 @@ public class CarController : MonoBehaviour
             Move();
             Steer();
             AnimateWheels();
-
-            //bool isDrifting = IsDrifting();
-
-            //foreach (var smokeParticleSytem in wheelSmokeParticleSystems)
-            //{
-            //    if (isDrifting)
-            //    {
-            //        smokeParticleSytem.Play();
-
-            //    }
-            //    else
-            //    {
-            //        smokeParticleSytem.Pause();
-            //    }
-            //}
+            UpdateIsDrifting();
+            UpdateMovingDirection();
         }
+    }
+
+    private void UpdateIsDrifting()
+    {
+        bool localIsDrifting = false;
+
+        if (speed >= minSpeedForDriftParticles && moveInput > 0.1 && IsMovingForward())
+        {
+            Vector3 carVelocity = carRigidbody.velocity;
+            Vector3 carVelocityHorizontal = new Vector3(carVelocity.x, 0f, carVelocity.z);
+
+            Vector3 carForward = transform.forward;
+            Vector3 carForwardHorizontal = new Vector3(carForward.x, 0f, carForward.z);
+
+            float lateralVelocityMagnitude = Vector3.Dot(carVelocityHorizontal, Vector3.Cross(carForwardHorizontal, Vector3.up));
+            float forwardVelocityMagnitude = carVelocityHorizontal.magnitude;
+            float lateralToForwardRatio = Mathf.Abs(lateralVelocityMagnitude / forwardVelocityMagnitude);
+
+            localIsDrifting = lateralToForwardRatio > tresholdForDriftingParticles;
+        }
+
+        isDrifting = localIsDrifting;
     }
 
     private void UpdateSpeed()
@@ -116,7 +124,6 @@ public class CarController : MonoBehaviour
         brakeAction = playerInput.actions["Brake"];
         moveAction = playerInput.actions["Move"];
         steerAction = playerInput.actions["Steer"];
-        driftOnOffAction = playerInput.actions["DriftOnOff"];
 
         carRigidbody = GetComponent<Rigidbody>();
         carRigidbody.centerOfMass = _centerOfMass;
@@ -132,7 +139,6 @@ public class CarController : MonoBehaviour
         moveAction.canceled += context => moveInput = 0;
         steerAction.performed += context => steerInput = context.ReadValue<float>();
         steerAction.canceled += context => steerInput = 0;
-        driftOnOffAction.performed += context => ToggleDriftMode();
     }
 
     private void Move()
@@ -158,7 +164,9 @@ public class CarController : MonoBehaviour
 
         foreach (var wheel in wheels)
         {
-            wheel.wheelCollider.motorTorque = speed <= maxSpeed && IsWheelGrounded(wheel) ? moveInput * motorTorque : 0;
+            bool isWheelGrounded = IsWheelGrounded(wheel);
+
+            wheel.wheelCollider.motorTorque = speed <= maxSpeed && isWheelGrounded ? moveInput * motorTorque : 0;
 
             if (wheel.axel == Axel.Front)
             {
@@ -171,9 +179,9 @@ public class CarController : MonoBehaviour
 
                 var emission = wheel.smokeParticle.emission;
 
-                if (IsDrifting())
+                if (isDrifting && isWheelGrounded)
                 {
-                    emission.rateOverTime = 60f;
+                    emission.rateOverTime = moveInput * driftParticleEmissionRateOverTime;
                 }
                 else
                 {
@@ -181,30 +189,6 @@ public class CarController : MonoBehaviour
                 }
             }
         }
-    }
-
-    private bool IsWheelGrounded(Wheel wheel)
-    {
-        WheelHit hit;
-        bool isGrounded = wheel.wheelCollider.GetGroundHit(out hit);
-        return isGrounded;
-    }
-
-    private bool AreAllWheelsGrounded()
-    {
-        foreach (var wheel in wheels)
-        {
-            WheelHit hit;
-            bool isGrounded = wheel.wheelCollider.GetGroundHit(out hit);
-
-            if (!isGrounded)
-            {
-                return false;
-            }
-        }
-
-        
-        return true;
     }
 
     private void Steer()
@@ -242,36 +226,37 @@ public class CarController : MonoBehaviour
         return 1 - Math.Cos((x * Math.PI) / 2);
     }
 
-    private int GetMovementDirection()
+    private void UpdateMovingDirection()
     {
         float dotP = Vector3.Dot(transform.forward.normalized, carRigidbody.velocity.normalized);
+
         if (dotP > 0.5f)
         {
-            return 1;
+            movingDirection = 1;
         }
         else if (dotP < -0.5f)
         {
-            return -1;
+            movingDirection = -1;
         }
         else
         {
-            return 0;
+            movingDirection = 0;
         }
     }
 
     public bool IsMovingForward()
     {
-        return GetMovementDirection() == 1;
+        return movingDirection == 1;
     }
 
     public bool IsMovingBackward()
     {
-        return GetMovementDirection() == -1;
+        return movingDirection == -1;
     }
 
     public bool IsStandingStill()
     {
-        return GetMovementDirection() == 0;
+        return movingDirection == 0;
     }
 
     private void OnTriggerEnter(Collider collider)
@@ -290,37 +275,6 @@ public class CarController : MonoBehaviour
         SetPositionToStartPosition();
     }
 
-    public void ToggleDriftMode()
-    {
-        driftingEnabled = !driftingEnabled;
-
-        foreach (var wheel in wheels)
-        {
-            if (wheel.axel == Axel.Rear)
-            {
-                WheelFrictionCurve wheelFrictionCurve = new WheelFrictionCurve();
-
-                if (driftingEnabled)
-                {
-                    wheelFrictionCurve.extremumSlip = rearWheelExtremumSlipDrift;
-                    wheelFrictionCurve.extremumValue = rearWheelExtremumValueDrift;
-
-                }
-                else
-                {
-                    wheelFrictionCurve.extremumSlip = rearWheelExtremumSlipNonDrift;
-                    wheelFrictionCurve.extremumValue = rearWheelExtremumValueNonDrift;
-                }
-
-                wheelFrictionCurve.asymptoteSlip = rearWheelAsymptoteSlip;
-                wheelFrictionCurve.asymptoteValue = rearWheelAsymptoteValue;
-                wheelFrictionCurve.stiffness = rearWheelStiffness;
-
-                wheel.wheelCollider.sidewaysFriction = wheelFrictionCurve;
-            }
-        }
-    }
-
     private void SetPositionToStartPosition()
     {
         transform.position = startPosition;
@@ -333,51 +287,24 @@ public class CarController : MonoBehaviour
         startRotation = transform.rotation;
     }
 
-    private bool IsDrifting()
+    private bool IsWheelGrounded(Wheel wheel)
     {
-        Vector3 forward = transform.forward;
-        Vector3 velocity = carRigidbody.velocity;
-        float driftAngle = Vector3.Angle(forward, velocity);
-        float driftAngleTreshold = 20f;
+        WheelHit hit;
+        bool isGrounded = wheel.wheelCollider.GetGroundHit(out hit);
+        return isGrounded;
+    }
 
-        float spinThreshold = 1f;
-
-    bool isRearWheelDrifting = false;
-
-        if (moveInput > 0)
+    private bool AreAllWheelsGrounded()
+    {
+        foreach (var wheel in wheels)
         {
-            foreach (var wheel in wheels)
+            if (!IsWheelGrounded(wheel))
             {
-                if (wheel.axel == Axel.Rear)
-                {
-                    //float leftWheelAngularVelocity = wheel.wheelCollider.rpm * Mathf.PI / 30f;
-                    //float spinThreshold = 20f;
-
-                    //isRearWheelDrifting = leftWheelAngularVelocity > spinThreshold;
-
-                    WheelHit hit;
-                    float leftWheelAngularVelocity = 0f;
-
-                    if (wheel.wheelCollider.GetGroundHit(out hit))
-                    {
-                        leftWheelAngularVelocity = hit.forwardSlip * wheel.wheelCollider.radius;
-                    }
-
-                  
-
-                    if (leftWheelAngularVelocity > spinThreshold)
-                    {
-                        isRearWheelDrifting = true;
-                    }
-                    else
-                    {
-                        isRearWheelDrifting = false;
-                    }
-                }
+                return false;
             }
         }
 
-        //return isRearWheelDrifting && AreAllWheelsGrounded();
-        return isRearWheelDrifting;
+
+        return true;
     }
 }

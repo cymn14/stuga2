@@ -13,7 +13,7 @@ public class Ball : MonoBehaviour
     [SerializeField]
     private bool gravityDisabled = false;
 
-    private float ballCollisionForceTimeOffset = 0.1f;
+    private float ballCollisionForceTimeOffset = 0.02f;
     private Vector3 startPosition;
     private Quaternion startRotation;
     private InputAction respawnAction;
