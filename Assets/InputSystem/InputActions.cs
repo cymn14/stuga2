@@ -73,13 +73,13 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""LookAround"",
-                    ""type"": ""Value"",
-                    ""id"": ""96e00e7e-8b27-40b5-9b52-8b83ffff85bd"",
-                    ""expectedControlType"": ""Vector2"",
+                    ""name"": ""Show Menu"",
+                    ""type"": ""Button"",
+                    ""id"": ""b841b1cc-e42d-4bba-bd6a-3491c3a7aa26"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -159,6 +159,17 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Respawn"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0a0acc6f-11a3-48c7-ad79-c92fb9330843"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Show Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -209,6 +220,34 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Game Menu"",
+            ""id"": ""be9939e0-f8bf-477e-9144-7b9b4cf8424a"",
+            ""actions"": [
+                {
+                    ""name"": ""Resume"",
+                    ""type"": ""Button"",
+                    ""id"": ""6603b6c3-8261-4700-9134-f742bb1fea5b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""aeb75cdb-4162-4f52-b9b8-92239c260cc1"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Resume"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -220,11 +259,14 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_Player_Steer = m_Player.FindAction("Steer", throwIfNotFound: true);
         m_Player_SteerRight = m_Player.FindAction("Steer Right", throwIfNotFound: true);
         m_Player_Respawn = m_Player.FindAction("Respawn", throwIfNotFound: true);
-        m_Player_LookAround = m_Player.FindAction("LookAround", throwIfNotFound: true);
+        m_Player_ShowMenu = m_Player.FindAction("Show Menu", throwIfNotFound: true);
         // Win Screen
         m_WinScreen = asset.FindActionMap("Win Screen", throwIfNotFound: true);
         m_WinScreen_Retry = m_WinScreen.FindAction("Retry", throwIfNotFound: true);
         m_WinScreen_NextLevel = m_WinScreen.FindAction("Next Level", throwIfNotFound: true);
+        // Game Menu
+        m_GameMenu = asset.FindActionMap("Game Menu", throwIfNotFound: true);
+        m_GameMenu_Resume = m_GameMenu.FindAction("Resume", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -291,7 +333,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Steer;
     private readonly InputAction m_Player_SteerRight;
     private readonly InputAction m_Player_Respawn;
-    private readonly InputAction m_Player_LookAround;
+    private readonly InputAction m_Player_ShowMenu;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
@@ -301,7 +343,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         public InputAction @Steer => m_Wrapper.m_Player_Steer;
         public InputAction @SteerRight => m_Wrapper.m_Player_SteerRight;
         public InputAction @Respawn => m_Wrapper.m_Player_Respawn;
-        public InputAction @LookAround => m_Wrapper.m_Player_LookAround;
+        public InputAction @ShowMenu => m_Wrapper.m_Player_ShowMenu;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -326,9 +368,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Respawn.started += instance.OnRespawn;
             @Respawn.performed += instance.OnRespawn;
             @Respawn.canceled += instance.OnRespawn;
-            @LookAround.started += instance.OnLookAround;
-            @LookAround.performed += instance.OnLookAround;
-            @LookAround.canceled += instance.OnLookAround;
+            @ShowMenu.started += instance.OnShowMenu;
+            @ShowMenu.performed += instance.OnShowMenu;
+            @ShowMenu.canceled += instance.OnShowMenu;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -348,9 +390,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Respawn.started -= instance.OnRespawn;
             @Respawn.performed -= instance.OnRespawn;
             @Respawn.canceled -= instance.OnRespawn;
-            @LookAround.started -= instance.OnLookAround;
-            @LookAround.performed -= instance.OnLookAround;
-            @LookAround.canceled -= instance.OnLookAround;
+            @ShowMenu.started -= instance.OnShowMenu;
+            @ShowMenu.performed -= instance.OnShowMenu;
+            @ShowMenu.canceled -= instance.OnShowMenu;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -422,6 +464,52 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         }
     }
     public WinScreenActions @WinScreen => new WinScreenActions(this);
+
+    // Game Menu
+    private readonly InputActionMap m_GameMenu;
+    private List<IGameMenuActions> m_GameMenuActionsCallbackInterfaces = new List<IGameMenuActions>();
+    private readonly InputAction m_GameMenu_Resume;
+    public struct GameMenuActions
+    {
+        private @InputActions m_Wrapper;
+        public GameMenuActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Resume => m_Wrapper.m_GameMenu_Resume;
+        public InputActionMap Get() { return m_Wrapper.m_GameMenu; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(GameMenuActions set) { return set.Get(); }
+        public void AddCallbacks(IGameMenuActions instance)
+        {
+            if (instance == null || m_Wrapper.m_GameMenuActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_GameMenuActionsCallbackInterfaces.Add(instance);
+            @Resume.started += instance.OnResume;
+            @Resume.performed += instance.OnResume;
+            @Resume.canceled += instance.OnResume;
+        }
+
+        private void UnregisterCallbacks(IGameMenuActions instance)
+        {
+            @Resume.started -= instance.OnResume;
+            @Resume.performed -= instance.OnResume;
+            @Resume.canceled -= instance.OnResume;
+        }
+
+        public void RemoveCallbacks(IGameMenuActions instance)
+        {
+            if (m_Wrapper.m_GameMenuActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IGameMenuActions instance)
+        {
+            foreach (var item in m_Wrapper.m_GameMenuActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_GameMenuActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public GameMenuActions @GameMenu => new GameMenuActions(this);
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -429,11 +517,15 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         void OnSteer(InputAction.CallbackContext context);
         void OnSteerRight(InputAction.CallbackContext context);
         void OnRespawn(InputAction.CallbackContext context);
-        void OnLookAround(InputAction.CallbackContext context);
+        void OnShowMenu(InputAction.CallbackContext context);
     }
     public interface IWinScreenActions
     {
         void OnRetry(InputAction.CallbackContext context);
         void OnNextLevel(InputAction.CallbackContext context);
+    }
+    public interface IGameMenuActions
+    {
+        void OnResume(InputAction.CallbackContext context);
     }
 }

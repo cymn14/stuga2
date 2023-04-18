@@ -6,7 +6,7 @@ using UnityEngine;
 public class GoalIndicator : MonoBehaviour
 {
     private Color hitColor = Color.green;
-    private Color notHitColor = Color.black;
+    private Color notHitColor = Color.white;
     private TextMeshProUGUI ringGoalText;
 
     private void Awake()

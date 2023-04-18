@@ -51,13 +51,13 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "LookAround",
-                    "type": "Value",
-                    "id": "96e00e7e-8b27-40b5-9b52-8b83ffff85bd",
-                    "expectedControlType": "Vector2",
+                    "name": "Show Menu",
+                    "type": "Button",
+                    "id": "b841b1cc-e42d-4bba-bd6a-3491c3a7aa26",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -137,6 +137,17 @@
                     "action": "Respawn",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0a0acc6f-11a3-48c7-ad79-c92fb9330843",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Show Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -183,6 +194,34 @@
                     "processors": "",
                     "groups": "",
                     "action": "Next Level",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Game Menu",
+            "id": "be9939e0-f8bf-477e-9144-7b9b4cf8424a",
+            "actions": [
+                {
+                    "name": "Resume",
+                    "type": "Button",
+                    "id": "6603b6c3-8261-4700-9134-f742bb1fea5b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "aeb75cdb-4162-4f52-b9b8-92239c260cc1",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Resume",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 022e71752654d3f4fa0cbe71b312ad20, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 102c3f2cfdcb3d64199f97f4f9aa3d46, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.8335367, g: 0.80824596, b: 0.811661, a: 1}
+  m_IndirectSpecularColor: {r: 0.08673137, g: 0.12433755, b: 0.24047092, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -163,7 +163,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-252776
+  m_Name: pb_Mesh-20910
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -529,7 +529,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-252670
+  m_Name: pb_Mesh-20934
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -755,7 +755,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-252362
+  m_Name: pb_Mesh-20922
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -920,7 +920,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-252640
+  m_Name: pb_Mesh-21110
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -1263,7 +1263,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-252472
+  m_Name: pb_Mesh-21264
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -1428,7 +1428,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-252654
+  m_Name: pb_Mesh-21124
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -1871,6 +1871,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5437638147883763210, guid: 46f10fe4537c742e1827a5bcb36bf50e, type: 3}
+      propertyPath: m_Name
+      value: Game Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 5437638147883763210, guid: 46f10fe4537c742e1827a5bcb36bf50e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086059776550214181, guid: 46f10fe4537c742e1827a5bcb36bf50e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 5904481345860055181}
+    - target: {fileID: 8086059776550214181, guid: 46f10fe4537c742e1827a5bcb36bf50e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: CloseMenu
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086059776550214181, guid: 46f10fe4537c742e1827a5bcb36bf50e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GameController, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 9059257676864499577, guid: 46f10fe4537c742e1827a5bcb36bf50e, type: 3}
       propertyPath: m_Name
       value: GameController
@@ -1880,6 +1900,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 46f10fe4537c742e1827a5bcb36bf50e, type: 3}
+--- !u!114 &5904481345860055181 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6118691136440762261, guid: 46f10fe4537c742e1827a5bcb36bf50e, type: 3}
+  m_PrefabInstance: {fileID: 5904481345860055180}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fd569802361d4d3d8ec2562853c8b43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7946274875782132592
 PrefabInstance:
   m_ObjectHideFlags: 0

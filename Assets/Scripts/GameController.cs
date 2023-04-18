@@ -33,23 +33,29 @@ public class GameController : MonoBehaviour
     private WinScreen winScreen;
 
     [SerializeField]
-    private GameObject winScreenObj;
+    private GameObject gameMenuGameObject;
 
     [SerializeField]
-    private LevelController levelController;
+    private GameObject winScreenGameObject;
+
+    [SerializeField]
+    private SceneLoader sceneLoader;
 
     private List<Goal> goals;
     private List<GoalIndicator> goalIndicators;
     private int goalHitCount = 0;
     private InputAction respawnAction;
+    private InputAction showMenuAction;
     private PlayerInput playerInput;
     private GameObject[] ballGameObjects;
     private CarController carController;
     private bool isLevelRunning = false;
+    private bool isGameMenuShowing = false;
 
     private void Awake()
     {
         InitializeVariables();
+        InitializeGameObjects();
     }
 
     private void Start()
@@ -77,7 +83,7 @@ public class GameController : MonoBehaviour
         isLevelRunning = false;
         timer.StopTimer();
         winScreen.setWinTime(timer.getFormattedTime());
-        winScreenObj.SetActive(true);
+        winScreenGameObject.SetActive(true);
         levelWonAudioSource.Play();
     }
 
@@ -85,6 +91,7 @@ public class GameController : MonoBehaviour
     {
         playerInput = GetComponent<PlayerInput>();
         respawnAction = playerInput.actions["Respawn"];
+        showMenuAction = playerInput.actions["Show Menu"];
         ballGameObjects = GameObject.FindGameObjectsWithTag("Ball");
 
         GameObject carGameObject = GameObject.Find("Car");
@@ -98,12 +105,19 @@ public class GameController : MonoBehaviour
             goals.Add(ringGoalObject.GetComponent<Goal>());
         }
 
-        createGoalIndicatorGameObjects();
+        CreateGoalIndicatorGameObjects();
+    }
+
+    private void InitializeGameObjects()
+    {
+        winScreenGameObject.SetActive(false);
+        gameMenuGameObject.SetActive(false);
     }
 
     private void HandleInputs()
     {
         respawnAction.performed += context => Respawn();
+        showMenuAction.performed += context => ToggleMenu();
     }
 
     private void ResetAllBalls()
@@ -157,7 +171,7 @@ public class GameController : MonoBehaviour
     {
         UpdateGoalIndicators();
         ContinueGame();
-        winScreenObj.SetActive(false);
+        winScreenGameObject.SetActive(false);
         startCountdown.BeginCountdown();
     }
 
@@ -171,7 +185,7 @@ public class GameController : MonoBehaviour
 
     public void NextLevel()
     {
-        levelController.LoadNextLevel();
+        sceneLoader.LoadNextLevel();
     }
 
     public bool getIsLevelRunning()
@@ -189,13 +203,13 @@ public class GameController : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    private void createGoalIndicatorGameObjects()
+    private void CreateGoalIndicatorGameObjects()
     {
         string parentFolderName = "Goal Indicators";
         GameObject parentFolder = GameObject.Find(parentFolderName);
 
-        float top = 0f;
-        float right = 0f;
+        float top = 50f;
+        float right = 50f;
         float itemSpacing = 30f; // The offset between each copy
         int i = 0;
 
@@ -225,10 +239,37 @@ public class GameController : MonoBehaviour
             if (i < goalHitCount)
             {
                 goalIndicators[i].GoalHit();
-            } else
+            }
+            else
             {
                 goalIndicators[i].Reset();
             }
         }
+    }
+
+    private void ToggleMenu()
+    {
+        if (isGameMenuShowing)
+        {
+            CloseMenu();
+        }
+        else
+        {
+            ShowMenu();
+        }
+
+        isGameMenuShowing = !isGameMenuShowing;
+    }
+
+    private void ShowMenu()
+    {
+        gameMenuGameObject.SetActive(true);
+        PauseGame();
+    }
+
+    public void CloseMenu()
+    {
+        gameMenuGameObject.SetActive(false);
+        ContinueGame();
     }
 }

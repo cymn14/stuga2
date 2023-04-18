@@ -33,10 +33,11 @@ public class Goal : MonoBehaviour
         }
     }
 
-    public void BallTrigger()
+    public void BallTrigger(Collider other)
     {
         if (goalTrigger == GoalTriggerEnum.Ball)
         {
+            other.gameObject.transform.parent.gameObject.SetActive(false);
             Trigger();
         }
     }
@@ -53,8 +54,8 @@ public class Goal : MonoBehaviour
 
     public void Reset()
     {
+        gameObject.SetActive(true);
         hasBallPassed = false;
-
         SetColor();
     }
 
