@@ -10,34 +10,49 @@ public class StartCountdown : MonoBehaviour
     [SerializeField]
     private int secondsToWait = 3;
 
+    [SerializeField]
+    private AudioSource countdownSingleSound;
+
+    [SerializeField]
+    private AudioSource countdownLastSound;
+
     private TextMeshProUGUI countdownText;
     private int countdown;
-    private AudioSource countdownSound;
 
     private void Awake()
     {
         countdownText = gameObject.GetComponent<TextMeshProUGUI>();
-        countdownSound = gameObject.GetComponent<AudioSource>();
     }
 
     public void BeginCountdown()
     {
-        countdownSound.Play();
-        gameObject.SetActive(true);
+        //gameObject.SetActive(true);
         countdown = secondsToWait;
         StartCoroutine(Countdown());
     }
 
     IEnumerator Countdown()
     {
-        while (countdown > 0)
+        countdownText.enabled = true;
+
+        while (countdown >= 0)
         {
-            countdownText.text = countdown.ToString("0");
+            if (countdown > 0)
+            {
+                countdownText.text = countdown.ToString("0");
+                countdownSingleSound.Play();
+            } else
+            {
+                countdownText.text = "GO!";
+                countdownLastSound.Play();
+                gameController.StartCountdownFinished();
+            }
+
             yield return new WaitForSeconds(1f);
             countdown--;
         }
 
-        gameObject.SetActive(false);
-        gameController.StartCountdownFinished();
+        countdownText.enabled = false;
+        //gameObject.SetActive(false);
     }
 }

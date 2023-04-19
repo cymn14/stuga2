@@ -19,7 +19,6 @@ public class LevelButton : MonoBehaviour
     private SceneLoader sceneLoader;
 
     private int levelIndex = 0;
-    private bool levelLocked = true;
 
     private void Awake()
     {
@@ -28,13 +27,11 @@ public class LevelButton : MonoBehaviour
 
     public void LockLevel()
     {
-        levelLocked = true;
         button.interactable = false;
     }
 
     public void UnlockLevel()
     {
-        levelLocked = false;
         button.interactable = true;
     }
 
@@ -51,6 +48,6 @@ public class LevelButton : MonoBehaviour
 
     private void SetButtonName()
     {
-        buttonText.text = buttonTextPrefix + " " + levelIndex;
+        buttonText.text = buttonTextPrefix + " " + (levelIndex + 1);
     }
 }

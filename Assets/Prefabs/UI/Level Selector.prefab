@@ -10,7 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 448437493249146174}
   - component: {fileID: 5258584488037481107}
+  - component: {fileID: 3585256553692363011}
   - component: {fileID: 3739351655521376984}
+  - component: {fileID: 3720170475518441100}
   m_Layer: 0
   m_Name: Level Selector
   m_TagString: Untagged
@@ -54,6 +56,19 @@ MonoBehaviour:
   levelButtonPrefab: {fileID: 9030363463651642945, guid: 9f865cb939e12419ea24ccced0f77e86, type: 3}
   sceneLoader: {fileID: 3739351655521376984}
   eventSystem: {fileID: 0}
+  playerPrefsManager: {fileID: 3720170475518441100}
+--- !u!114 &3585256553692363011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482574935118941139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7268b080d83f490f804937acdf91553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3739351655521376984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,6 +84,19 @@ MonoBehaviour:
   mainMenuSceneName: Main Menu
   levelSelectorSceneName: Level Selector
   levelsFolder: Scenes/Levels
+  playerPrefsManager: {fileID: 3720170475518441100}
+--- !u!114 &3720170475518441100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482574935118941139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7268b080d83f490f804937acdf91553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1573710897937215966
 GameObject:
   m_ObjectHideFlags: 0

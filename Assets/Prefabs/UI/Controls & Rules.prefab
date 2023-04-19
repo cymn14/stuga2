@@ -106,10 +106,10 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Clear all goals to complete a level.
 
-    To clear blue goals: shoot a
-    ball through
+    To clear blue goals: drive through
+    them
 
-    To clear pink goals: drive through them
+    To clear pink goals: shoot a ball through
 
     Be fast! the better
     the time, the better the ranking'

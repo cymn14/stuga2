@@ -35,6 +35,21 @@ public class CarController : MonoBehaviour
     [SerializeField]
     private List<Wheel> wheels;
 
+    [SerializeField]
+    private float minSpeedForEngineSound;
+
+    [SerializeField]
+    private float minPitch;
+
+    [SerializeField]
+    private float maxPitch;
+
+    [SerializeField]
+    private AudioSource engineSound;
+
+    [SerializeField]
+    private AudioSource engineMaxSound;
+
     private enum Axel
     {
         Front,
@@ -67,6 +82,8 @@ public class CarController : MonoBehaviour
     private bool isDrifting = false;
     private int movingDirection = 0;
 
+    private double pitchFromCar;
+
     private void Awake()
     {
         InitializeVariables();
@@ -80,6 +97,8 @@ public class CarController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        EngineSound();
+
         if (gameController.getIsLevelRunning())
         {
             UpdateSpeed();
@@ -306,5 +325,55 @@ public class CarController : MonoBehaviour
 
 
         return true;
+    }
+
+    private void EngineSound()
+    {
+        if (gameController.getIsLevelRunning())
+        {
+            if (!engineSound.isPlaying)
+            {
+                engineSound.Play();
+            }
+        }
+        else
+        {
+            if (engineMaxSound.isPlaying)
+            {
+                engineSound.Stop();
+            }
+        }
+
+        pitchFromCar = speed / 60f;
+
+        if (!AreAllWheelsGrounded())
+        {
+            engineSound.pitch = minPitch + moveInput / 3;
+        } else
+        {
+            if (speed < minSpeedForEngineSound)
+            {
+                engineSound.pitch = minPitch;
+            }
+            if (speed > minSpeedForEngineSound && speed < maxSpeed)
+            {
+                engineSound.pitch = minPitch + (float)pitchFromCar;
+            }
+        }
+
+        //if (isDrifting)
+        //{
+        //    if (!engineMaxSound.isPlaying)
+        //    {
+        //        engineMaxSound.Play();
+        //    }
+            
+        //} else
+        //{
+        //    if (engineMaxSound.isPlaying)
+        //    {
+        //        engineMaxSound.Stop();
+        //    }
+        //}
     }
 }

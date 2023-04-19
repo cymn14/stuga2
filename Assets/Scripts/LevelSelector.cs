@@ -15,9 +15,11 @@ public class LevelSelector : MonoBehaviour
     [SerializeField]
     private EventSystem eventSystem;
 
+    [SerializeField]
+    private PlayerPrefsManager playerPrefsManager;
+
     private string levelsFolder = "Scenes/Levels";
     private List<string> levelSceneNames = new List<string>();
-
     private List<LevelButton> levelButtons;
 
     private void Awake()
@@ -30,12 +32,9 @@ public class LevelSelector : MonoBehaviour
         GetLevelScenes();
         CreateLevelButtons();
 
-        int levelAt = PlayerPrefs.GetInt("levelAt", 3); /* < Change this int value to whatever your
-                                                             level selection build index is on your
-                                                             build settings */
         for (int i = 0; i < levelButtons.Count; i++)
         {
-            if (i + 1 > levelAt)
+            if (i > playerPrefsManager.GetBiggestClearedLevel())
             {
                 levelButtons[i].LockLevel();
             } else
@@ -60,8 +59,7 @@ public class LevelSelector : MonoBehaviour
     {
         string parentFolderName = "Level Grid";
         GameObject parentFolder = GameObject.Find(parentFolderName);
-
-        int levelIndex = 1;
+        int levelIndex = 0;
 
         foreach (var levelSceneName in levelSceneNames)
         {
@@ -71,7 +69,7 @@ public class LevelSelector : MonoBehaviour
             levelButton.SetLevelIndex(levelIndex);
             levelButtons.Add(levelButton);
 
-            if (levelIndex == 1)
+            if (levelIndex == playerPrefsManager.GetBiggestClearedLevel())
             {
                 eventSystem.firstSelectedGameObject = newLevelButtonPrefabGameObject;
             }

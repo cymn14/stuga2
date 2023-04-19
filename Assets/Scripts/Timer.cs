@@ -28,15 +28,20 @@ public class Timer : MonoBehaviour
 
     private void UpdateTimerText()
     {
-        timerText.text = getFormattedTime();
+        timerText.text = GetFormattedTime();
     }
 
-    public string getFormattedTime()
+    public string GetFormattedTime()
     {
         int minutes = (int)(elapsedTime / 60f);
         int seconds = (int)(elapsedTime % 60f);
         int milliseconds = (int)((elapsedTime * 1000f) % 1000f);
         return string.Format("{0:00}:{1:00}:{2:0}", minutes, seconds, milliseconds / 100);
+    }
+
+    public float GetElapsedTime()
+    {
+        return elapsedTime;
     }
 
     public void StartTimer()

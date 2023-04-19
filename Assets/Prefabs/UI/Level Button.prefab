@@ -149,6 +149,7 @@ GameObject:
   - component: {fileID: 4359952598304991846}
   - component: {fileID: 9170940755185795301}
   - component: {fileID: 9221672850753698769}
+  - component: {fileID: 6205238078667792460}
   m_Layer: 5
   m_Name: Level Button
   m_TagString: Untagged
@@ -302,3 +303,16 @@ MonoBehaviour:
   mainMenuSceneName: Main Menu
   levelSelectorSceneName: Level Selector
   levelsFolder: Scenes/Levels
+  playerPrefsManager: {fileID: 6205238078667792460}
+--- !u!114 &6205238078667792460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9030363463651642945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7268b080d83f490f804937acdf91553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

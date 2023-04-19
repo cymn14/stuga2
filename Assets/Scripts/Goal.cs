@@ -5,7 +5,6 @@ public class Goal : MonoBehaviour
     [SerializeField]
     private GoalTriggerEnum goalTrigger = GoalTriggerEnum.Ball;
 
-
     [SerializeField]
     private Color ballTriggerColor = Color.cyan;
 
@@ -22,10 +21,12 @@ public class Goal : MonoBehaviour
     private bool hasBallPassed = false;
     private Color hitColor = Color.green;
     private Renderer ringRenderer;
+    private AudioSource goalSound;
 
     private void Awake()
     {
         gameController = GameObject.Find("GameController").GetComponent<GameController>();
+        goalSound = GetComponent<AudioSource>();
         ringRenderer = GetComponent<Renderer>();
         SetColor();
     }
@@ -51,6 +52,7 @@ public class Goal : MonoBehaviour
     {
         if (!hasBallPassed)
         {
+            goalSound.Play();
             hasBallPassed = true;
             ringRenderer.material.color = hitColor;
             gameController.GoalHit();

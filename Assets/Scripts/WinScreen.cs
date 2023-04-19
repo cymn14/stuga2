@@ -8,6 +8,12 @@ public class WinScreen : MonoBehaviour
     private TextMeshProUGUI winTime;
 
     [SerializeField]
+    private TextMeshProUGUI personalBesttime;
+
+    [SerializeField]
+    private GameObject newHighscoreGameObject;
+
+    [SerializeField]
     private GameObject buttonToSelect;
 
     [SerializeField]
@@ -16,11 +22,19 @@ public class WinScreen : MonoBehaviour
     private void Awake()
     {
         gameObject.SetActive(false);
+        newHighscoreGameObject.SetActive(false);
     }
 
-    public void Show(string time)
+    public void Show(string time, string bestTime, bool newHighscore)
     {
         winTime.text = time;
+        personalBesttime.text = bestTime;
+
+        if(newHighscore)
+        {
+            newHighscoreGameObject.SetActive(true);
+        }
+
         gameObject.SetActive(true);
         eventSystem.SetSelectedGameObject(buttonToSelect);
     }

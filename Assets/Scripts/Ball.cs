@@ -19,6 +19,7 @@ public class Ball : MonoBehaviour
     private InputAction respawnAction;
     private PlayerInput playerInput;
     private Rigidbody ballRigidbody;
+    private AudioSource ballHitSound;
 
     private void Awake()
     {
@@ -40,6 +41,7 @@ public class Ball : MonoBehaviour
     {
         ballRigidbody = GetComponent<Rigidbody>();
         playerInput = GetComponent<PlayerInput>();
+        ballHitSound = GetComponent<AudioSource>();
         respawnAction = playerInput.actions["Respawn"];
     }
 
@@ -52,6 +54,8 @@ public class Ball : MonoBehaviour
     {
         if (collision.collider.tag == "Player")
         {
+            ballHitSound.Play();
+
             if (gravityDisabled)
             {
                 ballRigidbody.useGravity = true;

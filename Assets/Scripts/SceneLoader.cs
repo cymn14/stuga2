@@ -14,7 +14,9 @@ public class SceneLoader : MonoBehaviour
     [SerializeField]
     private string levelsFolder = "Scenes/Levels";
 
-    private int currentLevel;
+    [SerializeField]
+    private PlayerPrefsManager playerPrefsManager;
+
     private List<string> levelSceneNames = new List<string>();
 
     private void Start()
@@ -28,18 +30,19 @@ public class SceneLoader : MonoBehaviour
         }
     }
 
-    public void LoadLevel(int index)
+    public void LoadLevel(int levelIndex)
     {
-        if (index >= 0 && index < levelSceneNames.Count)
+        if (levelIndex >= 0 && levelIndex < levelSceneNames.Count)
         {
-            currentLevel = index;
-            SceneManager.LoadScene(levelSceneNames[index]);
+            playerPrefsManager.SetCurrentLevel(levelIndex + 1);
+            SceneManager.LoadScene(levelSceneNames[levelIndex]);
         }
     }
 
     public void LoadNextLevel()
     {
-        LoadLevel(currentLevel + 1);
+        int currentLevelIndex = playerPrefsManager.GetCurrentLevel() - 1;
+        LoadLevel(currentLevelIndex + 1);
     }
 
     public void LoadLevelSelector()

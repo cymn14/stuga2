@@ -5,10 +5,6 @@ using UnityEngine.InputSystem;
 
 public class GameController : MonoBehaviour
 {
-
-    [SerializeField]
-    private AudioSource goalHitAudioSource;
-
     [SerializeField]
     private AudioSource levelWonAudioSource;
 
@@ -36,6 +32,9 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private SceneLoader sceneLoader;
 
+    [SerializeField]
+    private PlayerPrefsManager playerPrefsManager;
+
     private List<Goal> goals;
     private List<GoalIndicator> goalIndicators;
     private int goalHitCount = 0;
@@ -46,6 +45,7 @@ public class GameController : MonoBehaviour
     private CarController carController;
     private bool isLevelRunning = false;
     private bool isGameMenuShowing = false;
+    int currentLevel;
 
     private void Awake()
     {
@@ -54,6 +54,7 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        currentLevel = playerPrefsManager.GetCurrentLevel();
         HandleInputs();
         StartLevel();
     }
@@ -61,8 +62,6 @@ public class GameController : MonoBehaviour
     public void GoalHit()
     {
         goalHitCount++;
-        goalHitAudioSource.Play();
-
         UpdateGoalIndicators();
 
         if (goalHitCount == goals.Count)
@@ -76,7 +75,8 @@ public class GameController : MonoBehaviour
         PauseGame();
         isLevelRunning = false;
         timer.StopTimer();
-        winScreen.Show(timer.getFormattedTime());
+        UpdateBiggestClearedLevel();
+        UpdateBesttimeAndShowWinScreen();
         levelWonAudioSource.Play();
     }
 
@@ -257,5 +257,38 @@ public class GameController : MonoBehaviour
     {
         gameMenu.Close();
         ContinueGame();
+    }
+
+    private void UpdateBiggestClearedLevel()
+    {
+        if (currentLevel > playerPrefsManager.GetBiggestClearedLevel())
+        {
+            playerPrefsManager.SetBiggestClearedLevel(currentLevel);
+        }
+    }
+
+    private void UpdateBesttimeAndShowWinScreen()
+    {
+        float elapsedTime = timer.GetElapsedTime();
+        bool newBesttime = false;
+        float? besttime = playerPrefsManager.GetBesttime();
+
+        if (besttime == null || elapsedTime < besttime)
+        {
+            besttime = elapsedTime;
+            playerPrefsManager.SetBesttime(elapsedTime);
+            newBesttime = true;
+        }
+
+        winScreen.Show(GetFormattedTime(timer.GetElapsedTime()), GetFormattedTime((float)besttime), newBesttime);
+    }
+
+    private string GetFormattedTime(float time)
+    {
+        int minutes = (int)(time / 60f);
+        int seconds = (int)(time % 60f);
+        int milliseconds = (int)((time * 1000f) % 1000f);
+
+        return string.Format("{0:00}:{1:00}:{2:0}", minutes, seconds, milliseconds / 100);
     }
 }
