@@ -9054,3 +9054,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 926d61161090f411e9da35de1e3646f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  goalTrigger: 0
+  ballTriggerColor: {r: 1, g: 0, b: 0.9056177, a: 1}
+  carTriggerColor: {r: 0, g: 0.91764706, b: 1, a: 1}

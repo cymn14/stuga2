@@ -4030,6 +4030,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goalTrigger: 0
+  ballTriggerColor: {r: 1, g: 0, b: 0.9056177, a: 1}
+  carTriggerColor: {r: 0, g: 0.91764706, b: 1, a: 1}
 --- !u!1 &8861944495092840593
 GameObject:
   m_ObjectHideFlags: 0

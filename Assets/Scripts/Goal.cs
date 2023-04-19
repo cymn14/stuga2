@@ -5,6 +5,13 @@ public class Goal : MonoBehaviour
     [SerializeField]
     private GoalTriggerEnum goalTrigger = GoalTriggerEnum.Ball;
 
+
+    [SerializeField]
+    private Color ballTriggerColor = Color.cyan;
+
+    [SerializeField]
+    private Color carTriggerColor = Color.magenta;
+
     public enum GoalTriggerEnum
     {
         Ball,
@@ -14,8 +21,6 @@ public class Goal : MonoBehaviour
     private GameController gameController;
     private bool hasBallPassed = false;
     private Color hitColor = Color.green;
-    private Color ballTriggerColor = Color.cyan;
-    private Color carTriggerColor = Color.magenta;
     private Renderer ringRenderer;
 
     private void Awake()
