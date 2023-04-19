@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -33,10 +31,7 @@ public class GameController : MonoBehaviour
     private WinScreen winScreen;
 
     [SerializeField]
-    private GameObject gameMenuGameObject;
-
-    [SerializeField]
-    private GameObject winScreenGameObject;
+    private GameMenu gameMenu;
 
     [SerializeField]
     private SceneLoader sceneLoader;
@@ -55,7 +50,6 @@ public class GameController : MonoBehaviour
     private void Awake()
     {
         InitializeVariables();
-        InitializeGameObjects();
     }
 
     private void Start()
@@ -82,8 +76,7 @@ public class GameController : MonoBehaviour
         PauseGame();
         isLevelRunning = false;
         timer.StopTimer();
-        winScreen.setWinTime(timer.getFormattedTime());
-        winScreenGameObject.SetActive(true);
+        winScreen.Show(timer.getFormattedTime());
         levelWonAudioSource.Play();
     }
 
@@ -106,12 +99,6 @@ public class GameController : MonoBehaviour
         }
 
         CreateGoalIndicatorGameObjects();
-    }
-
-    private void InitializeGameObjects()
-    {
-        winScreenGameObject.SetActive(false);
-        gameMenuGameObject.SetActive(false);
     }
 
     private void HandleInputs()
@@ -164,6 +151,8 @@ public class GameController : MonoBehaviour
         ResetAllBalls();
         ResetCar();
         ResetCamera();
+        winScreen.Close();
+        gameMenu.Close();
         StartLevel();
     }
 
@@ -171,7 +160,6 @@ public class GameController : MonoBehaviour
     {
         UpdateGoalIndicators();
         ContinueGame();
-        winScreenGameObject.SetActive(false);
         startCountdown.BeginCountdown();
     }
 
@@ -261,15 +249,13 @@ public class GameController : MonoBehaviour
 
     private void ShowMenu()
     {
-        isGameMenuShowing = true;
-        gameMenuGameObject.SetActive(true);
+        gameMenu.Show();
         PauseGame();
     }
 
     public void CloseMenu()
     {
-        isGameMenuShowing = false;
-        gameMenuGameObject.SetActive(false);
+        gameMenu.Close();
         ContinueGame();
     }
 }

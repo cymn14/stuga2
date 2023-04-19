@@ -1,12 +1,7 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
-public class WinScreen : MonoBehaviour
+public class GameMenu : MonoBehaviour
 {
-    [SerializeField]
-    private TextMeshProUGUI winTime;
-
     [SerializeField]
     private GameObject buttonToSelect;
 
@@ -18,9 +13,8 @@ public class WinScreen : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void Show(string time)
+    public void Show()
     {
-        winTime.text = time;
         gameObject.SetActive(true);
         eventSystem.SetSelectedGameObject(buttonToSelect);
     }
