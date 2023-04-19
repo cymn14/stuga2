@@ -257,18 +257,18 @@ public class GameController : MonoBehaviour
         {
             ShowMenu();
         }
-
-        isGameMenuShowing = !isGameMenuShowing;
     }
 
     private void ShowMenu()
     {
+        isGameMenuShowing = true;
         gameMenuGameObject.SetActive(true);
         PauseGame();
     }
 
     public void CloseMenu()
     {
+        isGameMenuShowing = false;
         gameMenuGameObject.SetActive(false);
         ContinueGame();
     }

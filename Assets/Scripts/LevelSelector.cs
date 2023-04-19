@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class LevelSelector : MonoBehaviour
@@ -11,19 +12,26 @@ public class LevelSelector : MonoBehaviour
     [SerializeField]
     private SceneLoader sceneLoader;
 
+    [SerializeField]
+    private EventSystem eventSystem;
+
     private string levelsFolder = "Scenes/Levels";
     private List<string> levelSceneNames = new List<string>();
 
-    public List<LevelButton> levelButtons;
+    private List<LevelButton> levelButtons;
 
+    private void Awake()
+    {
+        levelButtons = new List<LevelButton>();
+    }
 
-    // Start is called before the first frame update
     void Start()
     {
+
         GetLevelScenes();
         CreateLevelButtons();
 
-        int levelAt = PlayerPrefs.GetInt("levelAt", 1); /* < Change this int value to whatever your
+        int levelAt = PlayerPrefs.GetInt("levelAt", 3); /* < Change this int value to whatever your
                                                              level selection build index is on your
                                                              build settings */
         for (int i = 0; i < levelButtons.Count; i++)
@@ -63,6 +71,12 @@ public class LevelSelector : MonoBehaviour
             LevelButton levelButton = newLevelButtonPrefabGameObject.GetComponent<LevelButton>();
             levelButton.SetLevelIndex(levelIndex);
             levelButtons.Add(levelButton);
+
+            if (levelIndex == 1)
+            {
+                eventSystem.firstSelectedGameObject = newLevelButtonPrefabGameObject;
+            }
+
             levelIndex++;
         }
     }
