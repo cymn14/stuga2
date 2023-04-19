@@ -457,34 +457,6 @@ PrefabInstance:
       propertyPath: eventSystem
       value: 
       objectReference: {fileID: 1403897301}
-    - target: {fileID: 6879812134732223105, guid: 30a397f7ead9144bdad291f332f4049f, type: 3}
-      propertyPath: m_Pivot.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6879812134732223105, guid: 30a397f7ead9144bdad291f332f4049f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -60
-      objectReference: {fileID: 0}
-    - target: {fileID: 7026766995803731657, guid: 30a397f7ead9144bdad291f332f4049f, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7026766995803731657, guid: 30a397f7ead9144bdad291f332f4049f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 8281076778571569330, guid: 30a397f7ead9144bdad291f332f4049f, type: 3}
-      propertyPath: m_text
-      value: LEVELS
-      objectReference: {fileID: 0}
-    - target: {fileID: 8281076778571569330, guid: 30a397f7ead9144bdad291f332f4049f, type: 3}
-      propertyPath: m_fontSize
-      value: 36
-      objectReference: {fileID: 0}
-    - target: {fileID: 8281076778571569330, guid: 30a397f7ead9144bdad291f332f4049f, type: 3}
-      propertyPath: m_fontSizeBase
-      value: 36
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

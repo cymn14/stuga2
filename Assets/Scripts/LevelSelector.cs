@@ -27,7 +27,6 @@ public class LevelSelector : MonoBehaviour
 
     void Start()
     {
-
         GetLevelScenes();
         CreateLevelButtons();
 
@@ -80,6 +79,4 @@ public class LevelSelector : MonoBehaviour
             levelIndex++;
         }
     }
-
-
 }
