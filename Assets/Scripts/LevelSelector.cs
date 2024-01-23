@@ -16,11 +16,12 @@ public class LevelSelector : MonoBehaviour
     private EventSystem eventSystem;
 
     [SerializeField]
-    private PlayerPrefsManager playerPrefsManager;
+    private bool allLevelsUnlocked = false;
 
     private string levelsFolder = "Scenes/Levels";
     private List<string> levelSceneNames = new List<string>();
     private List<LevelButton> levelButtons;
+    private int biggestClearedLevel;
 
     private void Awake()
     {
@@ -29,17 +30,26 @@ public class LevelSelector : MonoBehaviour
 
     void Start()
     {
+        biggestClearedLevel = PlayerDataManager.instance.GetBiggestClearedLevel();
         GetLevelScenes();
         CreateLevelButtons();
 
         for (int i = 0; i < levelButtons.Count; i++)
         {
-            if (i > playerPrefsManager.GetBiggestClearedLevel())
-            {
-                levelButtons[i].LockLevel();
-            } else
+            if (allLevelsUnlocked)
             {
                 levelButtons[i].UnlockLevel();
+            }
+            else
+            {
+                if (i > biggestClearedLevel)
+                {
+                    levelButtons[i].LockLevel();
+                }
+                else
+                {
+                    levelButtons[i].UnlockLevel();
+                }
             }
         }
     }
@@ -69,7 +79,7 @@ public class LevelSelector : MonoBehaviour
             levelButton.SetLevelIndex(levelIndex);
             levelButtons.Add(levelButton);
 
-            if (levelIndex == playerPrefsManager.GetBiggestClearedLevel())
+            if (levelIndex == biggestClearedLevel)
             {
                 eventSystem.firstSelectedGameObject = newLevelButtonPrefabGameObject;
             }

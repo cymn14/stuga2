@@ -67,14 +67,12 @@ public class CarController : MonoBehaviour
     }
 
     private Rigidbody carRigidbody;
-    private InputAction brakeAction;
     private InputAction moveAction;
     private InputAction steerAction;
     private PlayerInput playerInput;
     private GameController gameController;
     private Vector3 startPosition;
     private Quaternion startRotation;
-    private bool isBraking = false;
     private double speed = 0;
     private float moveInput; // Range from -1 to 1, -1 -> backward, 1 -> forward
     private float steerInput; // Range from -1 to 1, -1 -> left, 1 -> right
@@ -107,6 +105,15 @@ public class CarController : MonoBehaviour
             AnimateWheels();
             UpdateIsDrifting();
             UpdateMovingDirection();
+
+            if (speed >= maxSpeed)
+            {
+                gameController.showMaxSpeedIndicator();
+            }
+            else
+            {
+                gameController.hideMaxSpeedIndicator();
+            }
         }
     }
 
@@ -140,7 +147,6 @@ public class CarController : MonoBehaviour
     private void InitializeVariables()
     {
         playerInput = GetComponent<PlayerInput>();
-        brakeAction = playerInput.actions["Brake"];
         moveAction = playerInput.actions["Move"];
         steerAction = playerInput.actions["Steer"];
 
@@ -152,8 +158,6 @@ public class CarController : MonoBehaviour
 
     private void HandleInputs()
     {
-        brakeAction.performed += context => isBraking = true;
-        brakeAction.canceled += context => isBraking = false;
         moveAction.performed += context => moveInput = context.ReadValue<float>();
         moveAction.canceled += context => moveInput = 0;
         steerAction.performed += context => steerInput = context.ReadValue<float>();
@@ -174,11 +178,6 @@ public class CarController : MonoBehaviour
         {
             frontAxelBrakeTorque = idleBrakeTorque;
             rearAxelBrakeTorque = idleBrakeTorque;
-        }
-
-        if (isBraking)
-        {
-            rearAxelBrakeTorque = brakeTorque;
         }
 
         foreach (var wheel in wheels)
@@ -329,27 +328,13 @@ public class CarController : MonoBehaviour
 
     private void EngineSound()
     {
-        if (gameController.getIsLevelRunning())
-        {
-            if (!engineSound.isPlaying)
-            {
-                engineSound.Play();
-            }
-        }
-        else
-        {
-            if (engineMaxSound.isPlaying)
-            {
-                engineSound.Stop();
-            }
-        }
-
         pitchFromCar = speed / 60f;
 
         if (!AreAllWheelsGrounded())
         {
             engineSound.pitch = minPitch + moveInput / 3;
-        } else
+        }
+        else
         {
             if (speed < minSpeedForEngineSound)
             {
@@ -367,7 +352,7 @@ public class CarController : MonoBehaviour
         //    {
         //        engineMaxSound.Play();
         //    }
-            
+
         //} else
         //{
         //    if (engineMaxSound.isPlaying)
@@ -375,5 +360,15 @@ public class CarController : MonoBehaviour
         //        engineMaxSound.Stop();
         //    }
         //}
+    }
+
+    public void StartCar()
+    {
+        engineSound.Play();
+    }
+
+    public void TurnOffCar()
+    {
+        engineSound.Stop();
     }
 }

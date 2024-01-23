@@ -33,7 +33,7 @@ public class GameController : MonoBehaviour
     private SceneLoader sceneLoader;
 
     [SerializeField]
-    private PlayerPrefsManager playerPrefsManager;
+    private GameObject maxSpeedIndicator;
 
     private List<Goal> goals;
     private List<GoalIndicator> goalIndicators;
@@ -45,7 +45,6 @@ public class GameController : MonoBehaviour
     private CarController carController;
     private bool isLevelRunning = false;
     private bool isGameMenuShowing = false;
-    int currentLevel;
 
     private void Awake()
     {
@@ -54,7 +53,6 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        currentLevel = playerPrefsManager.GetCurrentLevel();
         HandleInputs();
         StartLevel();
     }
@@ -72,10 +70,11 @@ public class GameController : MonoBehaviour
 
     private void LevelWon()
     {
+        carController.TurnOffCar();
         PauseGame();
         isLevelRunning = false;
         timer.StopTimer();
-        UpdateBiggestClearedLevel();
+        PlayerDataManager.instance.UpdateBiggestClearedLevel();
         UpdateBesttimeAndShowWinScreen();
         levelWonAudioSource.Play();
     }
@@ -86,6 +85,7 @@ public class GameController : MonoBehaviour
         respawnAction = playerInput.actions["Respawn"];
         showMenuAction = playerInput.actions["Show Menu"];
         ballGameObjects = GameObject.FindGameObjectsWithTag("Ball");
+        maxSpeedIndicator.SetActive(false);
 
         GameObject carGameObject = GameObject.Find("Car");
         carController = carGameObject.GetComponent<CarController>();
@@ -149,6 +149,7 @@ public class GameController : MonoBehaviour
         }
 
         ResetAllBalls();
+        carController.TurnOffCar();
         ResetCar();
         ResetCamera();
         winScreen.Close();
@@ -160,6 +161,7 @@ public class GameController : MonoBehaviour
     {
         UpdateGoalIndicators();
         ContinueGame();
+        carController.StartCar();
         startCountdown.BeginCountdown();
     }
 
@@ -181,6 +183,16 @@ public class GameController : MonoBehaviour
         return isLevelRunning;
     }
 
+    public void showMaxSpeedIndicator()
+    {
+        maxSpeedIndicator.SetActive(true);
+    }
+
+    public void hideMaxSpeedIndicator()
+    {
+        maxSpeedIndicator.SetActive(false);
+    }
+
     private void PauseGame()
     {
         Time.timeScale = 0;
@@ -196,9 +208,6 @@ public class GameController : MonoBehaviour
         string parentFolderName = "Goal Indicators";
         GameObject parentFolder = GameObject.Find(parentFolderName);
 
-        float top = 50f;
-        float right = 50f;
-        float itemSpacing = 30f; // The offset between each copy
         int i = 0;
 
         foreach (var ringGoal in goals)
@@ -208,9 +217,6 @@ public class GameController : MonoBehaviour
             GoalIndicator goalIndicator = newGoalIndicatorGameObject.GetComponent<GoalIndicator>();
             RectTransform rectTransform = newGoalIndicatorGameObject.GetComponent<RectTransform>();
 
-            Vector2 currentPosition = rectTransform.anchoredPosition;
-            Vector2 newPosition = new Vector2(Screen.width / 2 - right - i * itemSpacing - rectTransform.sizeDelta.x / 2f, Screen.height / 2 - top - rectTransform.sizeDelta.y / 2f);
-            rectTransform.anchoredPosition = newPosition;
             goalIndicators.Add(goalIndicator);
 
             int copyNumber = i + 1;
@@ -250,33 +256,27 @@ public class GameController : MonoBehaviour
     private void ShowMenu()
     {
         gameMenu.Show();
+        carController.TurnOffCar();
         PauseGame();
     }
 
     public void CloseMenu()
     {
         gameMenu.Close();
+        carController.StartCar();
         ContinueGame();
-    }
-
-    private void UpdateBiggestClearedLevel()
-    {
-        if (currentLevel > playerPrefsManager.GetBiggestClearedLevel())
-        {
-            playerPrefsManager.SetBiggestClearedLevel(currentLevel);
-        }
     }
 
     private void UpdateBesttimeAndShowWinScreen()
     {
         float elapsedTime = timer.GetElapsedTime();
         bool newBesttime = false;
-        float? besttime = playerPrefsManager.GetBesttime();
+        float? besttime = PlayerDataManager.instance.GetBesttime();
 
         if (besttime == null || elapsedTime < besttime)
         {
             besttime = elapsedTime;
-            playerPrefsManager.SetBesttime(elapsedTime);
+            PlayerDataManager.instance.SetBesttime(elapsedTime);
             newBesttime = true;
         }
 

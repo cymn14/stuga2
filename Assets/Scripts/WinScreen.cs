@@ -29,11 +29,7 @@ public class WinScreen : MonoBehaviour
     {
         winTime.text = time;
         personalBesttime.text = bestTime;
-
-        if(newHighscore)
-        {
-            newHighscoreGameObject.SetActive(true);
-        }
+        newHighscoreGameObject.SetActive(newHighscore);
 
         gameObject.SetActive(true);
         eventSystem.SetSelectedGameObject(buttonToSelect);

@@ -1648,14 +1648,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlaneOfDoom
       objectReference: {fileID: 0}
-    - target: {fileID: 6500937195780768764, guid: 6826e70d2145146de8718137d643286e, type: 3}
-      propertyPath: m_TagString
-      value: PlaneOfDoom
-      objectReference: {fileID: 0}
-    - target: {fileID: 6500937195780768764, guid: 6826e70d2145146de8718137d643286e, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

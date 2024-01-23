@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5226014876257430735}
   m_Layer: 0
   m_Name: PlaneOfDoom
-  m_TagString: Untagged
+  m_TagString: PlaneOfDoom
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -32,7 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 20
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5186483059579310610
 MeshFilter:
