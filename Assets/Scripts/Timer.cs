@@ -31,12 +31,13 @@ public class Timer : MonoBehaviour
         timerText.text = GetFormattedTime();
     }
 
-    public string GetFormattedTime()
+    private string GetFormattedTime()
     {
         int minutes = (int)(elapsedTime / 60f);
         int seconds = (int)(elapsedTime % 60f);
         int milliseconds = (int)((elapsedTime * 1000f) % 1000f);
-        return string.Format("{0:00}:{1:00}:{2:0}", minutes, seconds, milliseconds / 100);
+
+        return string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds / 10);
     }
 
     public float GetElapsedTime()

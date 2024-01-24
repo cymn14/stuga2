@@ -1,27 +1,30 @@
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using UnityEngine.UI; // This namespace is used for both RawImage and Image
 
 public class GoalIndicator : MonoBehaviour
 {
+    [SerializeField]
     private Color hitColor = Color.green;
+
+    [SerializeField]
     private Color notHitColor = Color.white;
-    private TextMeshProUGUI ringGoalText;
+
+    private Image goalImage;
 
     private void Awake()
     {
-        ringGoalText = gameObject.GetComponent<TextMeshProUGUI>();
-        ringGoalText.color = notHitColor;
+        goalImage = gameObject.GetComponent<Image>();
+        goalImage.color = notHitColor;
     }
 
     public void GoalHit()
     {
-        ringGoalText.color = hitColor;
+        goalImage.color = hitColor;
     }
 
     public void Reset()
     {
-        ringGoalText.color = notHitColor;
+        goalImage.color = notHitColor;
     }
 }

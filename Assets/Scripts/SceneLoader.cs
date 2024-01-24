@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using System.IO;
 
 public class SceneLoader : MonoBehaviour
 {
@@ -18,12 +18,21 @@ public class SceneLoader : MonoBehaviour
 
     private void Start()
     {
-        string[] scenePaths = System.IO.Directory.GetFiles("Assets/" + levelsFolder, "*.unity");
+        InitializeLevelSceneNames();
+    }
 
-        foreach (string path in scenePaths)
+    private void InitializeLevelSceneNames()
+    {
+        levelSceneNames.Clear();
+
+        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
         {
-            string sceneName = System.IO.Path.GetFileNameWithoutExtension(path);
-            levelSceneNames.Add(sceneName);
+            string path = SceneUtility.GetScenePathByBuildIndex(i);
+            if (path.Contains(levelsFolder))
+            {
+                string sceneName = Path.GetFileNameWithoutExtension(path);
+                levelSceneNames.Add(sceneName);
+            }
         }
     }
 
@@ -32,13 +41,7 @@ public class SceneLoader : MonoBehaviour
         if (levelIndex >= 0 && levelIndex < levelSceneNames.Count)
         {
             PlayerDataManager.instance.SetCurrentLevel(levelIndex + 1);
-
-            Debug.Log("level index: " + PlayerDataManager.instance.GetCurrentLevel());
-
-            Debug.Log("level name: " + levelSceneNames[levelIndex]);
-
             SceneManager.LoadScene(levelSceneNames[levelIndex]);
-
         }
     }
 

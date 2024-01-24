@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -56,12 +57,16 @@ public class LevelSelector : MonoBehaviour
 
     private void GetLevelScenes()
     {
-        string[] scenePaths = System.IO.Directory.GetFiles("Assets/" + levelsFolder, "*.unity");
-
-        foreach (string path in scenePaths)
+        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
         {
+            string path = SceneUtility.GetScenePathByBuildIndex(i);
             string sceneName = System.IO.Path.GetFileNameWithoutExtension(path);
-            levelSceneNames.Add(sceneName);
+
+            // Check if the scene belongs to the levels folder
+            if (path.Contains("/" + levelsFolder + "/"))
+            {
+                levelSceneNames.Add(sceneName);
+            }
         }
     }
 

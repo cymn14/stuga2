@@ -272,6 +272,7 @@ public class GameController : MonoBehaviour
         float elapsedTime = timer.GetElapsedTime();
         bool newBesttime = false;
         float? besttime = PlayerDataManager.instance.GetBesttime();
+        int levelRating = 0;
 
         if (besttime == null || elapsedTime < besttime)
         {
@@ -280,7 +281,25 @@ public class GameController : MonoBehaviour
             newBesttime = true;
         }
 
-        winScreen.Show(GetFormattedTime(timer.GetElapsedTime()), GetFormattedTime((float)besttime), newBesttime);
+        if (elapsedTime <= LevelSettings.instance.goldMedalTime)
+        {
+            levelRating = 3;
+        }
+        else if (elapsedTime <= LevelSettings.instance.silverMedalTime)
+        {
+            levelRating = 2;
+        }
+        else if (elapsedTime <= LevelSettings.instance.bronzeMedalTime)
+        {
+            levelRating = 1;
+        }
+
+        winScreen.Show(
+            GetFormattedTime(timer.GetElapsedTime()),
+            GetFormattedTime((float)besttime),
+            newBesttime,
+            levelRating
+        );
     }
 
     private string GetFormattedTime(float time)
@@ -289,6 +308,6 @@ public class GameController : MonoBehaviour
         int seconds = (int)(time % 60f);
         int milliseconds = (int)((time * 1000f) % 1000f);
 
-        return string.Format("{0:00}:{1:00}:{2:0}", minutes, seconds, milliseconds / 100);
+        return string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds / 10);
     }
 }
