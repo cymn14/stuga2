@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class LevelSettings : MonoBehaviour
 {
-    public static LevelSettings instance;
-
     [SerializeField]
     public float goldMedalTime = 10f;
 
@@ -14,18 +12,4 @@ public class LevelSettings : MonoBehaviour
 
     [SerializeField]
     public float bronzeMedalTime = 30f;
-
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
-    }
 }

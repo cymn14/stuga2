@@ -3320,9 +3320,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55a74281c11194b85820291da6b2be92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldMedalTime: 10
+  goldMedalTime: 18
   silverMedalTime: 20
-  bronzeMedalTime: 30
+  bronzeMedalTime: 23
 --- !u!4 &1971059757
 Transform:
   m_ObjectHideFlags: 0
@@ -4246,6 +4246,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6118691136440762261, guid: 46f10fe4537c742e1827a5bcb36bf50e, type: 3}
+      propertyPath: levelSettings
+      value: 
+      objectReference: {fileID: 1971059756}
     - target: {fileID: 9059257676864499577, guid: 46f10fe4537c742e1827a5bcb36bf50e, type: 3}
       propertyPath: m_Name
       value: GameController

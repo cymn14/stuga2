@@ -35,6 +35,9 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private GameObject maxSpeedIndicator;
 
+    [SerializeField]
+    private LevelSettings levelSettings;
+
     private List<Goal> goals;
     private List<GoalIndicator> goalIndicators;
     private int goalHitCount = 0;
@@ -55,6 +58,8 @@ public class GameController : MonoBehaviour
     {
         HandleInputs();
         StartLevel();
+
+        // PlayerDataManager.instance.DeleteAll();
     }
 
     public void GoalHit()
@@ -75,7 +80,7 @@ public class GameController : MonoBehaviour
         isLevelRunning = false;
         timer.StopTimer();
         PlayerDataManager.instance.UpdateBiggestClearedLevel();
-        UpdateBesttimeAndShowWinScreen();
+        UpdatePlayerDataAndShowWinScreen();
         levelWonAudioSource.Play();
     }
 
@@ -267,39 +272,59 @@ public class GameController : MonoBehaviour
         ContinueGame();
     }
 
-    private void UpdateBesttimeAndShowWinScreen()
+    private void UpdatePlayerDataAndShowWinScreen()
     {
-        float elapsedTime = timer.GetElapsedTime();
-        bool newBesttime = false;
-        float? besttime = PlayerDataManager.instance.GetBesttime();
-        int levelRating = 0;
+        float currentTime = timer.GetElapsedTime();
+        bool isNewBesttime = false;
+        float? previousBesttime = PlayerDataManager.instance.GetBesttime();
+        float besttime;
 
-        if (besttime == null || elapsedTime < besttime)
+        if (previousBesttime == null || currentTime < previousBesttime)
         {
-            besttime = elapsedTime;
-            PlayerDataManager.instance.SetBesttime(elapsedTime);
-            newBesttime = true;
+            besttime = currentTime;
+            PlayerDataManager.instance.SetBesttime(currentTime);
+            isNewBesttime = true;
+        }
+        else
+        {
+            besttime = (float)previousBesttime;
         }
 
-        if (elapsedTime <= LevelSettings.instance.goldMedalTime)
-        {
-            levelRating = 3;
-        }
-        else if (elapsedTime <= LevelSettings.instance.silverMedalTime)
-        {
-            levelRating = 2;
-        }
-        else if (elapsedTime <= LevelSettings.instance.bronzeMedalTime)
-        {
-            levelRating = 1;
-        }
+        int rating = this.getAndSaveRating(currentTime);
 
         winScreen.Show(
             GetFormattedTime(timer.GetElapsedTime()),
             GetFormattedTime((float)besttime),
-            newBesttime,
-            levelRating
+            isNewBesttime,
+            rating
         );
+    }
+
+    private int getAndSaveRating(float currentTime)
+    {
+        int rating = 0;
+
+        if (currentTime <= levelSettings.goldMedalTime)
+        {
+            rating = 3;
+        }
+        else if (currentTime <= levelSettings.silverMedalTime)
+        {
+            rating = 2;
+        }
+        else if (currentTime <= levelSettings.bronzeMedalTime)
+        {
+            rating = 1;
+        }
+
+        int? previousRating = PlayerDataManager.instance.GetRating();
+
+        if (previousRating == null || rating > previousRating)
+        {
+            PlayerDataManager.instance.SetRating(rating);
+        }
+
+        return rating;
     }
 
     private string GetFormattedTime(float time)

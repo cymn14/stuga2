@@ -34,25 +34,60 @@ public class PlayerDataManager : MonoBehaviour
 
     public float? GetBesttime()
     {
-        string playerPrefsKey = GetPlayerPrefsKey();
+        string keyBesttime = GetKeyForBesttime();
 
-        if (!PlayerPrefs.HasKey(playerPrefsKey))
+        if (!PlayerPrefs.HasKey(keyBesttime))
         {
             return null;
         }
 
-        return PlayerPrefs.GetFloat(GetPlayerPrefsKey());
+        return PlayerPrefs.GetFloat(GetKeyForBesttime());
     }
 
     public void SetBesttime(float besttime)
     {
-        PlayerPrefs.SetFloat(GetPlayerPrefsKey(), besttime);
+        PlayerPrefs.SetFloat(GetKeyForBesttime(), besttime);
         Save();
     }
 
-    public string GetPlayerPrefsKey()
+    public int? GetRating()
+    {
+        string keyRating = GetKeyForRating();
+
+        if (!PlayerPrefs.HasKey(keyRating))
+        {
+            return null;
+        }
+
+        return PlayerPrefs.GetInt(GetKeyForRating());
+    }
+
+    public void SetRating(int rating)
+    {
+        PlayerPrefs.SetInt(GetKeyForRating(), rating);
+        Save();
+    }
+
+    public string GetKeyForBesttime()
     {
         return "level" + currentLevel + "_besttime";
+    }
+
+    public string GetKeyForRating()
+    {
+        return "level" + currentLevel + "_rating";
+    }
+
+    public int GetRatingForLevel(int level)
+    {
+        string keyRating = "level" + level + "_rating";
+
+        if (!PlayerPrefs.HasKey(keyRating))
+        {
+            return 0;
+        }
+
+        return PlayerPrefs.GetInt(keyRating);
     }
 
     public int GetBiggestClearedLevel()

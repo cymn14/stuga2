@@ -16,8 +16,7 @@ public class LevelSelector : MonoBehaviour
     [SerializeField]
     private EventSystem eventSystem;
 
-    [SerializeField]
-    private bool allLevelsUnlocked = false;
+    private bool allLevelsUnlocked = true;
 
     private string levelsFolder = "Scenes/Levels";
     private List<string> levelSceneNames = new List<string>();
@@ -78,13 +77,16 @@ public class LevelSelector : MonoBehaviour
 
         foreach (var levelSceneName in levelSceneNames)
         {
+
             GameObject newLevelButtonPrefabGameObject = Instantiate(levelButtonPrefab);
             newLevelButtonPrefabGameObject.transform.SetParent(parentFolder.transform, false);
             LevelButton levelButton = newLevelButtonPrefabGameObject.GetComponent<LevelButton>();
             levelButton.SetLevelIndex(levelIndex);
+            levelButton.SetRating(PlayerDataManager.instance.GetRatingForLevel(levelIndex + 1));
+            levelButton.UpdateTextAndRating();
             levelButtons.Add(levelButton);
 
-            if (levelIndex == biggestClearedLevel)
+            if (levelIndex == 0)
             {
                 eventSystem.firstSelectedGameObject = newLevelButtonPrefabGameObject;
             }
